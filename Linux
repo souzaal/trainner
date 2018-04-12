@@ -1,0 +1,1105 @@
+
+
+find / -name test01 -exec /bin/rm {} \;  ( localiza e delete arquivos )
+
+##########################################################################
+
+nc –zv x.x.x.x(ip) 8080 (porta)  - Validação de rede
+
+nc –l  -e /bin/bash –p 1033 ( Acessando essa porta terá domínio sobre o computador, funcionando com trojan)
+
+################################################################################################################
+
+fdisk -l  | grep sd
+
+#########################################################################
+* LVM Comando *
+
+Aumenta disco VG_PRINCIPAL
+
+vgextend VG_PRINCIPAL /dev/sdd1
+
+
+vgreduce --removemissing VG_PRINCIPAL
+
+lvs
+
+lvcreate --size 6G -n TESTE VG_PRINCIPAL
+
+lvremove /dev/mapper/VG_PRINCIPAL-TESTE
+
+%%%%%%%%% PROBLEMA COM FILE SYSTEM VGS INATIVO %%%%%%%%%%%%%%%%%%%
+
+vgsscan
+
+vgchange -ay VG_PRINCIPAL
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+fdisk -l
+•	Execute o comando abaixo para converter a nova partição em um physical volume
+
+pvcreate /dev/sda3
+
+•	Execute o comando abaixo para extender o physical volume
+
+vgextend VG_PRINCIPAL /dev/sda3
+
+•	Execute o comando abaixo para o espaço disponível no physical volume
+
+vgdisplay VG_PRINCIPAL | grep "Free"
+
+•	Execute o comando abaixo para extender o Logical volume
+
+lvextend --size +40G /dev/VG_PRINCIPAL/LV_OPT
+
+### No exemplo estamos aumentando o LV_OPT em 40 Gigabytes ###
+•	Execute o comando abaixo para expandir o filesystem dentro do Logical volume
+resize2fs /dev/VG_PRINCIPAL/LV_OPT
+
+
+##########################################################################
+
+%%% configurar limit %%%
+
+echo "67108864" >/proc/sys/kernel/shmmax
+echo "67108864" >/proc/sys/kernel/shmall
+
+echo "16384" >/proc/sys/kernel/shmmni
+
+
+ sysctl -a | grep -E "shmall|shmmax"
+
+sysctl -p
+
+sysctl -a | grep shm
+
+#############################################################################
+
+Lista serviços
+
+ls -1 /etc/rc$(runlevel| cut -d" " -f2).d/S* | awk -F'[0-9][0-9]' '{print "Startup :-> " $2}'
+
+##############################################################################
+
+%%%procedimento para matar processo%%%%
+
+
+
+COMMAND   PID     USER   FD   TYPE DEVICE   SIZE/OFF   NODE NAME
+bash    19726  p583024  cwd    DIR  254,6      73728 154758 /producao/rotina/SINEB/log
+bash    19823  p983502  cwd    DIR  254,6      73728 154758 /producao/rotina/SINEB/log
+more    19855  p983502  cwd    DIR  254,6      73728 154758 /producao/rotina/SINEB/log
+more    19855  p983502    3r   REG  254,6 7568875520 154842 /producao/rotina/SINEB/log/001-MSIGA107-20150422.log (deleted)
+bash    20870  p983502  cwd    DIR  254,6       4096 162895 /producao/rotina/SINEB/dados/EXPORT/arquivos/batch
+bash    20999 postgres  cwd    DIR  254,6      73728 154758 /producao/rotina/SINEB/log
+bash    21466     root  cwd    DIR  254,6       4096      2 /producao
+lsof    21660     root  cwd    DIR  254,6       4096      2 /producao
+lsof    21661     root  cwd    DIR  254,6       4096      2 /producao
+bash    22888  p583024  cwd    DIR  254,6      36864 146597 /producao/rotina/BKPDB001/log
+
+
+*root@cx0000lx1056:/producao# ps -ef | grep 19855
+
+p983502  19855 19823  0 13:21 pts/5    00:00:00 more 001-MSIGA107-20150422.log
+root     21664 21466  0 16:44 pts/9    00:00:00 grep 19855
+root@cx0000lx1056:/producao# kill -9 19855
+root@cx0000lx1056:/producao#
+root@cx0000lx1056:/producao#
+
+
+*root@cx0000lx1056:/producao# df –h
+
+Sist. Arq.            Size  Used Avail Use% Montado em
+/dev/mapper/vg001-raiz
+                      4,6G  1,5G  2,9G  34% /
+tmpfs                 2,0G     0  2,0G   0% /lib/init/rw
+udev                  2,0G  120K  2,0G   1% /dev
+tmpfs                 2,0G     0  2,0G   0% /dev/shm
+/dev/sda1             184M   22M  154M  13% /boot
+/dev/mapper/vg001-home
+                      4,6G  185M  4,2G   5% /home
+/dev/mapper/vg001-logs
+                       28G  6,9G   20G  27% /logs
+/dev/mapper/vg001-opt
+                       19G  5,7G   12G  33% /opt
+/dev/mapper/vg001-producao
+                      9,2G  4,1G  4,7G  47% /producao
+/dev/mapper/vg001-tmp
+                      4,6G  138M  4,3G   4% /tmp
+/dev/mapper/vg001-var
+                      9,2G  432M  8,3G   5% /var
+
+######################################################################################
+
+%%% WWN Linux %%%
+
+/inq.linux -sym_wwn | awk {'print $3,$4'} | sort | uniq
+
+for i in `ls`;do echo "- - -" > $i/scan;done
+
+Caminho arquivos (wwnn /sys/class/fc_host )
+
+executa para verificação wwnn online
+
+for i in `ls`; do cat $i/port_state;cat $i/port_name;done Online
+
+hp_rescan -a
+
+/OPT    ./inq.linux -sym_wwn | grep -i 6387 ( sempre usar a flag -i)
+
+adapter_info
+
+
+########################################################################################
+
+%%% Netcat %%%
+
+nc –zv x.x.x.x(ip) 8080 (porta)  - Validação de rede
+
+nc –l  -e /bin/bash –p 1033 ( Acessando essa porta terá domínio sobre o computador, funcionando com trojan)
+
+ nc -l -k 1299 -vv - (lista porta)
+
+
+lsof –i tcp:ssh
+
+nmap -v -sL 10.192.224.0/24 > teste1
+
+nmap -v -sP 10.192.224.0/24
+
+tcpdump -i eth5 host 10.192.228.220
+
+
+nmap -v -sR 10.131.254.17
+
+
+yum
+
+
+#####################################################################################
+
+Copia
+
+scp /opt/DVD* root@10.192.222.61:/opt
+
+nohup scp -r ANTIFRAUDE* root@cx0000sh237.intra.caixa.gov.br:/vmfs/volumes/7259CLUDES002_DS01
+
+
+Comando  nohup - para continuar a copia
+
+scp - r ( comando para copiar)
+
+Diretório que será copiado  Antifraude*
+
+Servidor de destino e caminha da copia (root@cx0000sh237.intra.caixa.gov.br:/vmfs/volumes/7259CLUDES002_DS01)
+
+
+#####################################################################################
+
+%%% Alterar velucidade da placa de redrede %%%
+
+ethtool -s eth10 speed 1000 duplex full autoneg no
+
+ethtool -s eth10 speed 1000 duplex full autoneg off
+
+#####################################################################################
+
+Senha ILOM
+
+Usuário:cepti
+Senha: ceptibrcef
+
+IP: 10.222.64.139/
+
+#####################################################################################
+
+ERRATA SATALINE
+
+https://10.222.76.3/rhn/Login.do
+
+usuário:cpm
+senha: cpm123
+
+#####################################################################################
+
+%%% REINCIAR SENHA DO ROOT %%%
+
+init=/bin/bash
+
+fastboot
+
+Linha para reiniciar a senha de root quando os volumes não foram montados
+
+
+
+
+Linha para reiniciar senha de root quando os volumes estão montados;
+
+#####################################################################################
+
+
+
+%%% Tanhamo do Disco %%%
+
+df -h . | awk '{print $2}'
+
+#####################################################################################
+
+%% SERIAL DO HD %%%
+
+hdparm -i /dev/hda
+
+dmidecode -t 1
+
+####################################################################################
+
+%%% SWAP %%%
+
+swapoff /dev/mapper/VG_PRINCIPAL-LV_SWAP
+free -m
+lvextend -L+15G /dev/mapper/VG_PRINCIPAL-LV_SWAP
+swapon
+swapon /dev/mapper/VG_PRINCIPAL-LV_SWAP
+free -m
+
+#######################################################################################
+
+Upgrade
+
+yum upgrade -y
+
+yum upgrade -y --nogpgcheck
+
+#######################################################################################
+
+XCLOCK
+
+export XAUTHORITY=/home/a745870/.Xauthority
+
+xclock
+
+
+export DISPLAY= endereço IP:0.0
+
+##################################################################################
+
+puppet agent –t –server cx0000lx260.corecaixa
+
+remove certificado (puppet cert clean cxextrlx035.desenvolvimento.extracaixa) servidor puppet cx0000lx260
+
+puppet cert sign hostname
+puppet cert list hostname
+
+
+###################################################################################
+
+Serviço Ldap
+
+./nslcd  ( CentOS)
+----------------------------------------------
+Porta Ldap
+
+telnet 10.192.192.25 389
+---------------------------------------------
+
+find . -type -size +1------c -atime +60 -exec rm {} \; (remove arquivos cm mais de uma megabyte, cujo ultimo acesso foi há mais de 60 dias)
+
+find / -name \*.sh -o -name \*.txt -print
+
+
+find . -ctime +20 -exec rm -rf {} \;
+
+###################################################################################
+
+Mudar informação do usuário´
+
+chfn
+
+-f modifica nome
+-r modificar localizacao
+-p modifica telefone
+-o informações adicionais
+
+###################################################################################
+
+Performace de rede
+
+iperf -s -m –in
+
+iperf -c 10.192.236.168 -m -in
+
+tcpdump -i eth0
+ tcpdump -i eth0 dst 192.168.210.20
+
+iptraf
+
+Coltar informação do MTU
+ clerump -i bond1 -e -n -nn greater 1600
+
+
+##################################################################################
+
+Performace Server
+
+top
+iotop
+htop
+iostat
+
+##################################################################################
+
+psacct -  comando ac -p / ac user
+
+#################################################################################
+tar
+
+tar -cvf nome do arquivo /home ( ponto de copia)
+
+tar-xvf (descompacta arquivo tar)
+
+tar -zcvf (aquivo Z)
+
+tar -zxvf (descompacta Z)
+
+################################################################################
+
+cut -d":" -f2 /etc/passwd  ( opção f é o numero de coluna)
+
+Comando REV ( Reverte o texto)
+
+################################################################################
+
+repositorio
+
+registra maquina no repositorio manual
+
+Diretorio repositorio;
+
+/etc/puppet/environments/linux/modules/repositorios/
+
+
+Criar arquivos e copia conteudo na maquina cx0000lx260
+
+vi rhel6-epel.repo
+vi puppet-rhel6.repo
+
+cat rhel6-epel.repo
+
+copia a linha do servidor original
+
+vi /usr/share/rhn/RHN-ORG-TRUSTED-SSL-CERT
+vi /etc/sysconfig/rhn/up2date
+
+
+ 2507  07/12/15 13:33:16 -> cat puppet-rhel6.repo
+ 2508  07/12/15 13:34:29 -> cd ../..
+ 2509  07/12/15 13:34:30 -> ls
+ 2510  07/12/15 13:34:37 -> cd rhn/manifests/
+ 2511  07/12/15 13:34:38 -> ls
+ 2512  07/12/15 13:34:41 -> cat init.pp
+ 2513  07/12/15 13:35:38 -> cat ../files/RHN-ORG-TRUSTED-SSL-CERT
+ 2514  07/12/15 13:36:10 -> ls
+ 2515  07/12/15 13:36:15 -> cat init.pp
+ 2516  07/12/15 13:37:02 -> cat ../files/up2date
+ 2517  07/12/15 13:37:33 -> cat init.pp
+ 2518  07/12/15 13:37:55 -> vi init.pp
+
+
+
+
+rhnreg_ks --serverUrl=http://10.192.32.4/XMLRPC --activationkey=3-7259-sap
+
+
+##############################################################################
+
+Deltea a registro de uma maquina no puppet
+
+mensagem;
+
+On most platforms: find /var/lib/puppet/ssl -name mo7366lx0008.intra.caixa.gov.br.pem -delete
+  1b. On Windows: del "/var/lib/puppet/ssl/mo7366lx0008.intra.caixa.gov.br.pem" /f
+  2. puppet agent -t
+
+soluçãp:
+
+rm -r -f /var/lib/puppet/ssl
+
+Acessa maqunia cx0000lx260.corecaixa
+
+executa comando abaixo;
+
+puppet cert clean mo7366lx0008.intra.caixa.gov.br
+
+# Volte na maquina de esta instalando e excutado o comando do puppet novamente
+
+puppet agent -t --server cx0000lx260.corecaixa
+
+
+############################################################################
+
+Permissão Oracle RAC
+
+/etc/udev/rules.d/61-asm.rules
+Conteudo:
+KERNEL=="sdb", OWNER:="oracle", GROUP:="oinstall", MODE:="660"
+
+Para ativar a configuração:
+/sbin/udevadm trigger --type=devices --action=change
+
+
+#############################################################################
+Sysprep do Linux
+
+sys-unconfigure
+
+#############################################################################
+
+Limpeza cache
+
+echo 3> /proc/sys/vm/drop_caches
+
+•To free pagecache:
+•# echo 1 > /proc/sys/vm/drop_caches
+•To free dentries and inodes:
+•# echo 2 > /proc/sys/vm/drop_caches
+•To free pagecache, dentries and inodes:
+•# echo 3 > /proc/sys/vm/drop_caches
+
+
+sysctl -w vm.drop_caches=3
+
+############################################################################
+
+swapoff /dev/mapper/VG_PRINCIPAL-LV_SWAP
+  267  26/02/15 09:03:19 -> free -m
+  268  26/02/15 09:03:48 -> lvextend -L+15G /dev/mapper/VG_PRINCIPAL-LV_SWAP
+  269  26/02/15 09:03:59 -> swapon
+  270  26/02/15 09:04:04 -> swapon /dev/mapper/VG_PRINCIPAL-LV_SWAP
+  271  26/02/15 09:04:07 -> free -m
+  272  26/02/15 09:04:16 -> swapoff /dev/mapper/VG_PRINCIPAL-LV_SWAP
+  273  26/02/15 09:05:13 -> mkswap /dev/mapper/VG_PRINCIPAL-LV_SWAP
+  274  26/02/15 09:05:31 -> swapon /dev/mapper/VG_PRINCIPAL-LV_SWAP
+  275  26/02/15 09:05:33 -> free -m
+############################################################################
+
+nohup scp -r ANTIFRAUDE* root@cx0000sh237.intra.caixa.gov.br:/vmfs/volumes/7259CLUDES002_DS01
+
+
+Comando  nohup - para continuar a copia
+
+scp - r ( comando para copiar)
+
+Diretório que será copiado  Antifraude*
+
+Servidor de destino e caminha da copia (oot@cx0000sh237.intra.caixa.gov.br:/vmfs/volumes/7259CLUDES002_DS01)
+
+##############################################################################
+
+
+https://access.redhat.com/home
+
+User: ceptibr21_caixa
+
+Pwd: ceptibr_21
+
+######################################################################
+
+Aumenta SWAP
+
+dd if=/dev/zero of=/swap/swapfile bs=1024 count=500000
+
+500000+0 records in
+500000+0 records out
+
+LVM
+
+mkswap /dev/mapper/VG_PRINCIPAL_LVSWAP
+
+Setting up swapspace version 1, size = 509595904 bytes
+
+ swapon /swap/swapfile
+
+############################################################
+
+Rescan LUN
+
+root@cx0000lx258 ~]# ls /sys/class/scsi_host
+host0  host1  host10  host11  host2  host3  host4  host5  host6  host7  host8  host9
+
+Em seguida faça o “scan” em cada um dos hosts utilizando o comando a seguir
+
+[root@cx0000lx258 ~]# for i in $(seq 0 11); do echo "- - -" > /sys/class/scsi_host/host"$i"/scan ; done
+
+Para saber se a LUN foi reconhecida será necessário saber o ID da LUN informado pela equipe de armazenamento e executar os comandos a seuguir
+
+[root@cx0000lx258 ~]# cd /opt/
+
+[root@cx0000lx258 opt]# cd /openldap
+
+
+################################################
+
+
+tar cjvf /logs/jboss/console-stdout2103log.tar.gz console-stdout.log
+tar cjvf /logs/jboss/serverlog_2103.tar.gz server.log.2016-0*
+
+
+#############################################################
+
+
+
+cpuinfo - Verificando CPU e Core
+Utilize os comandos:
+
+Quantas CPUs físicas eu tenho em minha máquina?
+
+# cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l
+
+Quantos Cores eu tenho em minha máquina?
+
+# cat /proc/cpuinfo | egrep "core id|physical id" | tr -d "\n" | sed s/physical/\\nphysical/g | grep -v ^$ | sort | uniq | wc -l
+
+
+
+grep "model name" /proc/cpuinfo | wc -l
+
+########################################################################
+
+Servidor NFS CLUSTER CETAD
+
+LX897  / LC898
+
+CLUSTERDES002
+
+10.192.230.136   CXEXTRLX136     LINUX(VM)   cx0000sh259
+10.192.230.137   CXEXTRLX137     LINUX(VM)   cx0000sh259
+
+
+10.116.88.160:/export/sisgd /opt/sisgd  nfs     nfsvers=3       0       0  (nobody)
+
+stgnfsdados.dtc.caixa:/ifs/DCPARMAZNA1/ZONEINTRA/CEPTIBR/Backup_TSM_Linux /suporte       nfs     nfsvers=3,tcp,hard,noatime,actimeo=0    0 0
+
+
+###################################################################
+
+Arquivo para configuração
+
+/etc/crontan
+
+crontab –e
+
+Todos podem usar o editor VI
+----------------------------------------
+Para remover
+
+Crontab –r
+
+Para lista
+
+Crontab –l
+--------------------------------------
+Arquivos para permissão
+
+/etc/cron.d
+
+
+Linha de comando;
+
+0 * * * * root netstat -antp | grep :5402 >> /backup/conexoes_posprd02/coleta.txt  ( executa cada 1 hora )
+
+*/5* * * * root netstat -antp | grep :5402 >> /backup/conexoes_posprd02/coleta.txt  ( executa cada 5 segundo )
+
+00 00, 12 * * 2-6 '  (Executar a meio-dia e a meia-noite de terça a sábado)
+
+OBS: O usuário root e adicionado para permitir a cron
+
+
+
+Exemplo;
+
+1 18 1 * * root run-parts --report /etc/cron.montly
+|    |   | |  |    |    |
+|    |   | |  |    |     \_Comando que será executado
+|    |   | |  |    |
+|    |   | |  |     \_ UID que executará o comando
+|    |   | |  |
+|    |   | |  \_ Dia da semana (0-7)
+|    |   | |
+|    |   |  \_ Mês (1-12)
+|    |   |
+|    |    \_ Dia do Mês (1-31)
+|    |
+|     \_ Hora
+|
+\_ Minuto
+
+###############################################################
+
+Procedimento de instalação.
+Executar dentro /opt.
+
+wget http://cx0000lx040.corecaixa/deploy/system-edge.tar.bz2 && tar -jxvf system-edge.tar.bz2 && rm -rf system-edge.tar.bz2
+
+/opt/system-edge/instalaSRM.sh
+
+/etc/init.d/CA-SystemEDGE status
+
+
+##############################
+
+yum install perl-Test-HTTP-Server-Simple
+yum install jemalloc.x86_64
+yum install perl-Time-HiRes
+
+#################################
+
+ps -ps -fu postgres | grep idle | grep -v "idle in"  | awk '{print $2}' | xargs kill -9
+
+################################
+
+
+SWAP Criação
+
+adicona disco
+
+format disco " fdisk"
+
+criar pvcreate /dev/disco
+
+criar vgcreate VG_SWAP /dev/disco
+
+criar lvcreate --size 4GB -n LV_SWAP VG_SWAP
+
+format com mkswap /dev/mapper/VG_SWAP-LV_SWAP
+
+adiconar /etc/fstab
+
+ativa:  swapon -va
+
+cat /proc/swaps # free
+
+free -m
+
+top
+
+#####################################
+criar repositorio
+
+wget -l 2 -nd -nc -r -A.rpm http://downloads.linux.hpe.com/SDR/repo/spp/RedHatEnterpriseServer/6.8Server/x86_64/2016.04.0_supspp_rhel6.8_x86_64/
+
+createrepo /var/www/rhel6-hp
+createrepo /var/www/tsm-repo-rhn7/ --update
+
+
+
+
+Spawning worker 0 with 36 pkgs
+Workers Finished
+Gathering worker results
+
+Saving Primary metadata
+Saving file lists metadata
+Saving other metadata
+Generating sqlite DBs
+Sqlite DBs complete
+
+
+
+transforma em red para o servidor local
+
+reposync --repoid=tsmrhn7-client --download_path=/var/www/tsm-repo-rhn7 --downloadcomps --download-metadata
+
+
+root@cx0000lx040 conf.d]# yum repolist
+Loaded plugins: product-id, rhnplugin, search-disabled-repos, security, subscription-manager
+This system is receiving updates from RHN Classic or RHN Satellite.
+HPE                                                                                                                                               | 2.9 kB     00:00
+HPE/primary_db                                                                                                                                    |  80 kB     00:00
+repo id                                                                  repo name                                                                                 status
+HPE                                                                      HPE                                                                                           36
+elasticsearch-2.x                                                        Elasticsearch repository for 2.x packages
+
+
+----------------------------------------------------------------------------------
+Configurar freeze satellite-sync
+
+
+Servidor: 10.222.76.3 Usuário: root Senha: C&t@d7366
+
+/usr/bin/satellite-sync --list-channels
+
+spacewalk-clone-by-date --channel="rhel-x86_64-server-6" "freeze-rhel-x86_64-server-6" --channel="rhel-x86_64-server-ha-6" "freeze-rhel-x86_64-server-ha-6" --channel="rhel-x86_64-server-optional-6" "freeze-rhel-x86_64-server-optional-6" --channel="rhel-x86_64-server-rs-6" "freeze-rhel-x86_64-server-rs-6" --channel="rhel-x86_64-server-supplementary-6" "freeze-rhel-x86_64-server-supplementary-6" --channel="rhn-tools-rhel-x86_64-server-6" "freeze-rhn-tools-rhel-x86_64-server-6" --channel="rhel-x86_64-server-extras-6" "freeze-rhel-x86_64-server-extras-6" --username="cpm" --password="cpm123" --to_date="2016-09-30" -y
+
+
+
+####################################################################################
+
+Desabilita   THP
+
+
+cd redhat_transparent_hugepage/
+ls
+grep AnonHugePages /proc/meminfo
+grep 'trans|thp' /proc/vmstat
+egrep 'trans|thp' /proc/vmstat
+grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{print $0; system("ps -fp " $3)} '
+echo never > /sys/kernel/mm/redhat_transparent_hugepage/enabled
+echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag
+grep AnonHugePages /proc/meminfo
+grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{print $0; system("ps -fp " $3)} '
+init 6
+grep AnonHugePages /proc/meminfo
+grep -e AnonHugePages  /proc/*/smaps | awk  '{ if($2>4) print $0} ' |  awk -F "/"  '{print $0; system("ps -fp " $3)} '
+cat /proc/sys/vm/nr_hugepages
+grep AnonHugePages /proc/meminfo
+egrep 'trans|thp' /proc/vmstat
+
+ vm.nr_hugepages sysctl parameter is greater than "0"
+
+
+######################################################################################
+CONFIGURAÇÃO DO START/STOP AUTOMÁTICO DO CONTROL-M AGENT
+
+
+Solaris 10
+
+cd /opt/ctmage/ctm/script
+
+iniciar e parar e diagnostico
+
+ag_diag_comm      check_os_version  rc.agent_user     set_agent_mode    shagent           sharch            shut-ag           start-ag
+
+porta 7016
+
+servidor controlM
+
+ctm.caixa (cx0000lx996)
+
+acesssar com o usuário CONTROL-M
+
+[root@cx0000lx996 a745870]# su - controlm
+
+Executar comando para analise
+
+cx0000lx996.corecaixa% ctm_menu
+
+
+ONTROL-M Main Menu
+-----------------------------
+
+Select one of the following menus:
+
+1 - CONTROL-M Manager
+2 - Database Menu
+3 - Database Mirroring
+4 - Security Authorization
+5 - Parameter Customization
+6 - Host Group
+7 - View HostID details
+8 - Agent Status
+9 - Troubleshooting
+
+q - Quit
+
+-----------------------------------------------------------------------------
+ Enter option number --->   []:8
+
+Agent Status Menu
+
+Select one of the following options:
+
+1 - List Last Known Status of Agents Platform
+2 - Change Agent Platform Status to Available
+3 - Change Agent Platform Status to Disabled
+4 - Delete Agent Platform Entry
+5 - Ping Agent Platform
+6 - Discover Agent
+
+q - Quit
+
+ Enter option number --->   []:5
+
+Time Stamp :
+-------------
+09/12/2016 18:53:08
+
+Ping Agent Platform
+
+Time Stamp :
+-------------
+09/12/2016 18:53:09
+
+
+*** Listara todos os servidores ***
+
+Agent cx0000ux825 is Discovering
+Agent cxextrux023 is Disabled
+Agent cxextrux023.desenvolvimento.extracaixa is Disabled
+Agent cxextrux128 is Disabled
+Enter host ID of agent you wish to ping or 'q' to quit:  []:cd0000ux017 ( digitar o servidor)
+
+*** Resultado ***
+
+Submitting ping request ...
+
+Agent : cd0000ux017 is alive
+
+Press Enter to continue
+
+Agent Status Menu
+-----------------------------
+
+Comando RPM
+
+
+ou
+# rpm -Uvh pacote (para mais detalhes de execução)
+
+Instalação/atualização forçada de pacotes:
+
+Embora a opção -force possa ser usada juntamente com a opção -i ou -U para instalação ou atualização forçada de pacotes, isto é, sem que todas as dependências tenham sido satisfeitas, NÃO É RECOMENDADA, pois o programa terá grandes chances de não funcionar, além de fazer com que o rpm ou qualquer outra ferramenta de gerenciamento de pacotes tenda a remover o programa por causa das dependências quebradas.
+
+Não tente usar gerenciadores de pacotes feitos para outras distribuições diferentes da que está em uso, pois geralmente causam estes problemas quando mal configuradas.
+
+Remoção de pacotes:
+
+# rpm -e pacote
+ou
+# rpm -e pacote1 pacote2 ... pacoteN
+
+Consultas a pacotes:
+
+# rpm -qi pacote
+
+Dá informações do pacote caso já esteja instalado.
+
+# rpm -qpi pacote-versão.i586.rpm
+
+Dá informações sobre o pacote contido em pacote-versão.i586.rpm, que não precisa estar instalado.
+
+# rpm -qa
+
+Lista TODOS os pacotes instalados no sistema.
+
+# rpm -qa | grep palavra
+
+Exibe o pacote filtrado com a palavra de busca com o grep.
+
+Compilação de pacotes fonte para a geração de pacotes binários
+Embora nem todo mundo precise recompilar os pacotes fonte .src.rpm, às vezes isso pode ser útil para aproveitar pacotes fonte de outras distribuições ou de versões mais recentes ou experimentais (cooker) da distribuição Linux em uso. Isso pode ser feito com:
+
+# rpmbuild -rebuild pacote.src.rpm
+
+Este comando instala o pacote fonte e recompila-o para gerar o(s) pacote(s) binário(s) derivados.
+
+# rpm -ivh pacote.src.rpm
+
+Este comando instala o pacote a partir do fonte, o compilando especificamente para a arquitetura do processador, o que otimiza o desempenho do programa para o hardware proposto, entretanto se gerencia do gerenciador de pacotes, ou seja, isento de verificações de atualização e correções.
+
+# rpmbuild -bb arquivospecdopacote.spec
+
+######################################################################################
+
+nobody:nobody  ( NFS )
+
+Site:  https://access.redhat.com/solutions/33455
+
+Resolution
+
+Modify the /etc/idmapd.conf with the proper domain (FQDN), on both the client and server.
+In this example, the proper domain is "example.com" so the "Domain =" directive within /etc/idmapd.conf should be modified to read:
+
+Domain = example.com
+service rpcidmapd restart
+# mount -o remount /nfs/mnt/point
+nfsidmap -c
+
+DISABLING;
+
+NFS client
+ # echo 'Y' > /sys/module/nfs/parameters/nfs4_disable_idmapping
+
+NFS server
+ # echo 'Y' > /sys/module/nfsd/parameters/nfs4_disable_idmapping
+
+
+ hutting down RPC idmapd:                                  [FAILED]
+Starting RPC idmapd: rpc.idmapd: conf_parse_line: 7: syntax error
+rpc.idmapd: conf_parse_line: 144: syntax error
+                                                           [  OK  ]
+
+
+Erro: Failed to start NFS status monitor for NFSv2/3 locking
+
+Solução: mount -o nolock /suporte
+
+
+
+ ##############################################################################
+
+comando ldap
+
+ldapsearch -h openldap.corecaixa -b o=corecaixa -p 389 -x -LLL -D perfil=APP dn
+
+
+##########################################
+
+Zabbix
+
+http://dashbix.hmp.corecaixa/
+
+Acesso via acesso via ldap.
+
+#############################################
+Ferramenta de analysis
+
+/opt/oswbb/analysis
+
+java -jar -Xmx512M /opt/oswbb/oswbba.jar -i /opt/oswbb/archive -MEM_ALL
+
+##########################################
+
+for i in $(ls *.zip);do unzip $i; done
+
+ for i in `ls httpd*` ; do ./$i start ;done
+
+ --------------------------------------------
+
+alternatives --install /bin/java java /opt/IBM/java-i386-80/bin/java/jre/bin/java 2
+
+
+alternatives --install /bin/java java /opt/IBM/java-i386-80/jre/bin/java 2
+
+
+alternatives --config java
+
+########################################
+
+locale
+
+localectl set-keymap us
+localectl set-locale LANG=en_US.UTF-8
+
+
+systemctl restart systemd-hostnamed
+
+#######################################
+
+
+lx897/898
+/etc/sysconfig/network-scripts/route-bond1.1300
+10.192.162.0/24 via 10.252.160.18 dev bond1.1300
+
+rodar comando:
+
+ip route add 10.192.162.0/24 via 10.252.160.18 dev eth1
+
+
+Adcionar varias rede na mesma interface
+
+ip addr add 192.168.0.1/24 dev eth0
+
+ip addr show dev eth0
+
+
+
+
+__________________________
+
+lvdisplay | awk '/LV Name/{n=$3} /Block device/{d=$3; sub(".*:","dm-",d); print d,n;}'
+
+
+lvd
+
+raiz
+lsblk
+
+
+---------------
+
+Erro
+
+mount -a
+mount: wrong fs type, bad option, bad superblock on /dev/mapper/VG_ORACLE-LV_GRID,
+       missing codepage or helper program, or other error
+       In some cases useful info is found in syslog - try
+       dmesg | tail  or so
+
+
+	   Solução:  fsck.ext  o lvm
+
+------------------------
+
+nmcli con add type ethernet con-name test-lab ifname ens9 ip4 10.10.10.10/24  gw4 10.10.10.254
+
+nmcli con up "lab static eth0"
+nmcli con down "lab static eth0"
+
+o confirm the MTU used between two specific devices. use ip command as follows:
+# ip route get {IP-address}
+# ip route get 192.168.1.1
+
+
+ifconfig | grep MTU | awk '{print $2,$5}'
+
+
+ethtool -g interface
+
+lspci | grep ne
+
+modinfo
+
+
+---------------------------------
+
+ethtool -S eth12 drop
+ethtool -g eth12 ( Verificar se o jumbo esta habilitado)
+
+
+-------------------------------------
+
+Erro de boot UX401 e UX402 após vitualização dos servidores físicos:
+
+Solução:
+
+Ligar VM com Live CD:
+
+Fazer backup do arquivo initrd.img-2.6.26-2-amd64 e substitui-lo por backup existente no diretório /boot.
+
+mv initrd.img-2.6.26-2-amd64 initrd.img-2.6.26-2-amd64.old
+
+cp initrd.img-2.6.26-2-amd64.bkp initrd.img-2.6.26-2-amd64
+
+-------------------
+
+Após reiniciar a VM foi necessário habilitar o LVM:
+
+vgchange -ay  g0v0
+
+-------------------
+
+Com o servidor habilitado foi editado o arquivo  /boot/grub/menu.lst
+
+De:
+kernel          /vmlinuz-2.6.26-2-amd64 root=/dev/g0v0/barra ro quiet
+
+Para:
+kernel          /vmlinuz-2.6.26-2-amd64 root=/dev/mapper/g0v0-barra ro quiet
+
+##################################
+
+Script
+
+crontab
+40 22 * * * /suporte/AP/scripts/jboss-scan.sh
+*/10 * * * * /backup/conexoes_lx234/exec.sh
+
+
+#TODAY=$(date)
+date >> /backup/conexoes_lx234/coleta.txt
+echo "----------------------------------------------------------------------------------------------------------------" >> /backup/conexoes_lx234/coleta.txt
+#netstat -napt > /backup/conexoes_lx234/coleta_$TODAY.txt
+netstat -napt >> /backup/conexoes_lx234/coleta.txt
+echo " " >> /backup/conexoes_lx234/coleta.txt
+
