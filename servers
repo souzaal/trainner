@@ -1,0 +1,33 @@
+---
+- hosts: Servers
+  tasks:
+    - name: Instalacao HTTPD
+      yum: name={{item}} state=present update_cache=yes
+      with_items:
+        - httpd
+        - mod_wsgi.x86_64
+        - python-pip.noarch
+        - python-virtualenv.noarch
+
+    - name: Iniciando Httpd
+      service: name=httpd state=started
+
+    - name: Hbilitando modulo Apache
+      apache2_module: state=present name=wsgi
+      notify: restart httpd
+
+    - name: Conf Vitrtual Environment
+      pip: requirementes=/var/www/demo/requirements.txt virtualenv=/var/www/demo/.venv
+      notify: restart httpd
+
+  handlers:
+    - name: restart apache
+      service: name=httpd state=restarted
+
+    - name: Modulo copiando diretorio para apache
+      copy: src=/etc/ansible/demo/app dest=/var/www/demo mode=0775
+      notify: restart httpd
+
+    - name: Copiar os Vhost do Apache
+      copy: src=/etc/ansible/demo/demo.conf dest=/var/www/html
+      notify: restart httpd
