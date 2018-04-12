@@ -1,0 +1,6 @@
+<code_scheme name="Default">
+  <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
+  <codeStyleSettings language="Python">
+    <option name="SPACE_AROUND_MULTIPLICATIVE_OPERATORS" value="false" />
+  </codeStyleSettings>
+</code_scheme>
