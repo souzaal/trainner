@@ -1,0 +1,8 @@
+---
+- hosts: Servers
+  tasks:
+    - name: Add user
+      user: name=kamal
+            groups=root
+            shell=/bin/bash
+~
