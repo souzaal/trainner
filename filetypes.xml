@@ -2,13 +2,14 @@
   <component name="FileTypeManager" version="17">
     <ignoreFiles list="*$py.class;*.hprof;*.pyc;*.pyo;*.rbc;*.yarb;*~;.DS_Store;.git;.hg;.svn;CVS;__pycache__;_svn;vssver.scc;vssver2.scc;" />
     <extensionMap>
-      <mapping pattern="Linux" type="PLAIN_TEXT" />
+      <mapping pattern="openshift" type="PLAIN_TEXT" />
       <mapping pattern="Ansible" type="PLAIN_TEXT" />
       <mapping pattern="teste" type="PLAIN_TEXT" />
+      <mapping pattern="Linux" type="PLAIN_TEXT" />
+      <mapping pattern="tste" type="YAML" />
       <mapping pattern="Wewbservers" type="YAML" />
       <mapping pattern="servers" type="YAML" />
       <mapping pattern="Users" type="YAML" />
-      <mapping pattern="tste" type="YAML" />
     </extensionMap>
   </component>
 </application>
