@@ -1,0 +1,60 @@
+chmod +x install-repo.ksh
+  442  ls
+  443  digest -a md5 sol-11_2-repo-md5sums.txt
+  444  cd /
+  445  zfs snapshot /export/IPSpgkrepo/Solaris1
+  446  zfs snapshot rpool/export/IPSpgkrepo/Solaris1
+  447  zfs snapshot rpool/export/IPSpgkrepo/Solaris11@sol_11_2_0
+  448  zfs snapshot list
+  449  zfs snapshot
+  450  zfs list
+  451  zfs snapshot help
+  452  zfs snapshot --help
+  453  zfs help
+  454  zfs list
+  455  zfs
+  456  zfs help
+  457  zfs help snapshot
+  458  zfs get snapshot
+  459  zfs help get
+  460  zfs get -o all
+  461  zfs get all
+  462  df -h
+  463  zfs list
+  464  zfs snapshot rpool@snap1
+  465  zfs list
+  466  zfs list snapshowt
+  467  zfs list snapshot
+  468  zfs list snapsht
+  469  zfs list snapshot
+  470  sfs list help
+  471  zfs list help
+  472  zfs help list
+  473  zfs list snapshot
+  474  zfs list rpool
+  475  zfs list
+  476  zfs list rpool@snap1
+  477  zpool get listsnapshot
+  478  zpool get listsnapshot sol_11_2_0
+  479  zpool get listsnapshot snap1
+  480  zpool get listsnapshots snap1
+  481  zpool get listsnapshots
+  482  zfs list -t snapshot
+  483  cd /export/IPSpgkrepo/Solaris11
+  484  ls
+  485  ./install-repo.ksh /export/IPSpgkrepo/Solaris11 -c -v -I
+  486  ./install-repo.ksh -d /export/IPSpgkrepo/Solaris11 -c -v -I
+  487  ls
+  488  cat README-repo-iso.txt
+  489  svccfg -s application/pkg/server setprop
+  490  svccfg -s application/pkg/server setprop             pkg/inst_root=<data_source>
+  491  svccfg -s application/pkg/server setprop             pkg/inst_root=<data_source>
+  492  clear
+  493  svcs application/pkg/server
+  494  svcprop =p pkg/inst_root application/pkg/server
+  495  ls
+  496  lofiadm -a sol-11_2-repo.iso
+  497  mount -F hsfs /dev/lofi/1 /mnt
+  498  rsysnc -aP /mnt/repo /export/IPSpkgrepo
+  499  rsysnc -aP /mnt/ /export/IPSpkgrepo
+  500  rsync -aP /mnt/repo /export/IPSpkgrepo

@@ -1,0 +1,182 @@
+
+
+
+
+
+#FORMAT DISCO COM ROOT#
+
+root@cx0000uxlab:~# format -e c1d2
+selecting c1d2
+[disk formatted, no defect list found]
+
+
+FORMAT MENU:
+        disk       - select a disk
+        type       - select (define) a disk type
+        partition  - select (define) a partition table
+        current    - describe the current disk
+        format     - format and analyze the disk
+        repair     - repair a defective sector
+        show       - translate a disk address
+        label      - write label to the disk
+        analyze    - surface analysis
+        defect     - defect list management
+        backup     - search for backup labels
+        verify     - read and display labels
+        inquiry    - show disk ID
+        volname    - set 8-character volume name
+        !<cmd>     - execute <cmd>, then return
+        quit
+format> label
+[0] SMI Label
+[1] EFI Label
+Specify Label type[1]: 0
+format> partition
+
+
+PARTITION MENU:
+        0      - change `0' partition
+        1      - change `1' partition
+        2      - change `2' partition
+        3      - change `3' partition
+        4      - change `4' partition
+        5      - change `5' partition
+        6      - change `6' partition
+        7      - change `7' partition
+        select - select a predefined table
+        modify - modify a predefined partition table
+        name   - name the current table
+        print  - display the current table
+        label  - write partition map and label to the disk
+        !<cmd> - execute <cmd>, then return
+        quit
+partition> 0
+Part      Tag    Flag     Cylinders        Size            Blocks
+  0       root    wm       0 -    3      144.00MB    (4/0/0)       294912
+
+Enter partition id tag[root]:
+Enter partition permission flags[wm]:
+Enter new starting cyl[0]: 0
+Enter partition size[294912b, 4c, 3e, 144.00mb, 0.14gb]:
+partition> p
+Current partition table (default):
+Total disk cylinders available: 1420 + 2 (reserved cylinders)
+
+Part      Tag    Flag     Cylinders        Size            Blocks
+  0       root    wm       0 -    3      144.00MB    (4/0/0)       294912
+  1       swap    wu       4 -    7      144.00MB    (4/0/0)       294912
+  2     backup    wu       0 - 1419       49.92GB    (1420/0/0) 104693760
+  3 unassigned    wm       0               0         (0/0/0)            0
+  4 unassigned    wm       0               0         (0/0/0)            0
+  5 unassigned    wm       0               0         (0/0/0)            0
+  6        usr    wm       8 - 1419       49.64GB    (1412/0/0) 104103936
+  7 unassigned    wm       0               0         (0/0/0)            0
+
+partition> 0
+Part      Tag    Flag     Cylinders        Size            Blocks
+  0       root    wm       0 -    3      144.00MB    (4/0/0)       294912
+
+Enter partition id tag[root]:
+Enter partition permission flags[wm]:
+Enter new starting cyl[0]: 0
+Enter partition size[294912b, 4c, 3e, 144.00mb, 0.14gb]: 1419c
+partition> p
+Current partition table (unnamed):
+Total disk cylinders available: 1420 + 2 (reserved cylinders)
+
+Part      Tag    Flag     Cylinders        Size            Blocks
+  0       root    wm       0 - 1418       49.89GB    (1419/0/0) 104620032
+  1       swap    wu       4 -    7      144.00MB    (4/0/0)       294912
+  2     backup    wu       0 - 1419       49.92GB    (1420/0/0) 104693760
+  3 unassigned    wm       0               0         (0/0/0)            0
+  4 unassigned    wm       0               0         (0/0/0)            0
+  5 unassigned    wm       0               0         (0/0/0)            0
+  6        usr    wm       8 - 1419       49.64GB    (1412/0/0) 104103936
+  7 unassigned    wm       0               0         (0/0/0)            0
+
+partition>
+partition>
+partition>
+partition> label
+[0] SMI Label
+[1] EFI Label
+Specify Label type[0]: 0
+Ready to label disk, continue? y
+
+partition> q
+
+format> q
+
+
+# CRIAR RPOOL #
+
+
+# CRIAR SNAPSHOT #
+
+zfs snapshot -r rpool@snap2
+
+# Compactar snapshot #
+
+ 
+# Send com criarção de arquivo#  Opção
+
+zfs send -Rv rpool@snap2 | gzip > /tmp/migration_$(hostname)_$(date +%Y%m%d).zfs.gz
+
+# Enviar para rpool diretor#
+
+zfs send rpool@snap1 | zfs recv rdados/ds01
+zfs send rpool/ROOT/solaris-2@snap1 | zfs recv rpool2/ROOT/solaris-2
+ zfs send rpool/ROOT/solaris-2/var@snap1 | zfs recv rpool2/ROOT
+
+
+# Criar Swap #
+
+zfs create -b 128k -V 2GB rpool/swap
+
+zfs set primarycache=metadata rpool/swap 
+
+zfs create -b 128k -V 4GB rpool/dump
+
+
+zpool set bootfs=rpool2/ROOT/solaris-2 rpool2
+
+zfs set mountpoint=/tmp/mnt rpool2/ROOT/solaris-2
+
+zfs mount rpool2/ROOT/solaris-2
+
+installboot -F zfs /usr/platform/`uname -i`/lib/fs/zfs/bootblk /dev/rdsk/c1d2s0
+
+
+
+# Erro no BEADM UUID #
+
+root@cx0000uxlab:/# beadm list
+BE          Flags Mountpoint Space  Policy Created
+--          ----- ---------- -----  ------ -------
+solaris-2   R     /tmp/mnt   11.25G static 2015-08-14 17:35
+solaris-bkp NR    /          14.23G static 2015-08-18 14:49
+
+root@cx0000uxlab:/# beadm activate solaris-2
+be_get_uuid: failed to get uuid property from BE root dataset user properties.
+
+root@cx0000uxlab:/# beadm list -H
+solaris-2;;R;/tmp/mnt;12074811392;static;1439584503
+solaris-bkp;5cca7278-2c2e-4895-916e-b84b9b93bc16;NR;/;15275294720;static;1439920191
+
+Solução: 
+zfs set org.opensolaris.libbe:uuid=595f1ec6-53d1-4749-8632-80e6e07b9db1 rpool2/ROOT/solaris-2
+
+root@cx0000uxlab:/# beadm list -H
+solaris-2;595f1ec6-53d1-4749-8632-80e6e07b9db1;R;/tmp/mnt;12074811392;static;1439584503
+solaris-bkp;5cca7278-2c2e-4895-916e-b84b9b93bc16;NR;/;15275294720;static;1439920191
+
+root@cx0000uxlab:/# beadm activate solaris-2
+
+
+
+
+
+
+
+
+

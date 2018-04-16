@@ -1,0 +1,12 @@
+# ldm migrate-domain ldom root@new-control-doman
+
+Como acompanhar por outra sessão.
+
+# ldm list -o status ldom
+
+Como cancelar o comando por outra sessão.
+
+# ldm cancel-operation migration ldom
+
+
+adicona o mesmo vsdev 

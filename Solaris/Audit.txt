@@ -1,0 +1,30 @@
+dbrsvgerux041 	10.252.127.41 	
+
+
+vi /etc/rsyslog.conf
+
+  512  history
+root@dbrsvgerux041:/etc# vi /etc/rsyslog.conf
+$ModLoad imsolaris
+*.err;kern.notice;auth.notice                   /dev/sysmsg
+#*.err;kern.debug;daemon.notice;mail.crit       -/var/adm/messages
+*.alert;kern.err;daemon.err                     :omusrmsg:operator
+*.alert                                         :omusrmsg:root
+*.emerg                                         :omusrmsg:*
+
+$ModLoad imtcp.so
+$InputTCPServerRun 514
+
+$ModLoad imudp.so
+$UDPServerAddress 10.252.127.41
+$UDPServerRun 514
+
+#$template audit_file,"/var/share/audit/%HOSTNAME%/audit-%HOSTNAME%-`date +%Y%m%d%H%M%S`.log"
+$template audit_file,"/var/share/audit/%HOSTNAME%/audit.log"
+:msg, contains, "audit." ?audit_file
+
+$template comandos_audit,"/var/share/audit/%HOSTNAME%/comandos.log"
+local0.info ?comandos_audit
+~
+
+

@@ -1,0 +1,15 @@
+
+
+boot-device=/virtual-devices@100/channel-devices@200/disk@2:a vnic1074947411
+
+
+
+eeprom auto-boot?=false ou true
+
+
+eeprom boot-device="/virtual-devices@100/channel-devices@200/disk@2:a vnic2084962155"
+
+eeprom boot-device="/virtual-devices@100/channel-devices@200/disk@2:a vnic1721869174"
+
+
+60000970000595700086533033333132

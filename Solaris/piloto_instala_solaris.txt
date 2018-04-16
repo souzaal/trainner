@@ -1,0 +1,393 @@
+ldm add-domain cx0000ux2096
+ldm add-vcpu 8 cx0000ux2096
+ldm add-memory 4G cx0000ux2096
+
+###Quando não tem primary usasr o comando add-vdsdev###
+
+ldm add-vdsdev mpgroup=cx0000ux2096-vol0 /dev/dsk/c0t60000970000592600102533031354145d0s2 cx0000ux2096-vol0@primary-vds0
+ldm add-vdsdev mpgroup=cx0000ux2096-vol0 /dev/dsk/c0t60000970000592600102533031354145d0s2 cx0000ux2096-vol0@iodomain-vds0
+
+###adiciona disco na Ldom### 
+
+ldm add-vdisk cx0000ux2096-vol0 cx0000ux2096-vol0@primary-vds0 cx0000ux2096
+
+
+ldm add-vnet vnet0 vswitch cx0000ux2096
+ldm add-vnet vnet1 vswitch cx0000ux2096
+ldm add-vdisk iso_vols10 iso_vols10@primary-vds0 cx0000ux2096
+ldm set-var auto-boot\?=false cx0000ux2096
+ldm set-var boot-device=rootdisk cx0000ux2096
+ldm bind cx0000ux2096
+
+
+Solaris 11
+
+- cx0000ux2096
+
+svccfg -s system/identity:node setprop config/nodename="cx0000uxlab"
+svccfg -s system/identity:node setprop config/loopback="cx0000uxlab"
+svccfg -s system/identity:node refresh
+
+- dominio
+
+svccfg -s nis/domain setprop config/domainname=hostname: corecaixa
+svccfg -s nis/domain:default refresh
+svcadm enable nis/domain
+domainname
+cat /etc/defaultdomain
+
+- dns
+
+svccfg -s network/dns/client setprop config/nameserver = net_address: "(10.252.32.50 10.252.32.51 10.192.32.50)"          
+
+#DATACENTER
+svccfg -s network/dns/client setprop config/nameserver = net_address: "(10.192.32.50 10.192.32.51 10.252.32.50)"  					#511N
+svccfg -s network/dns/client setprop config/domain = astring: "corecaixa"  
+
+#ou “extracaixa” ou “intercaixa”
+svccfg -s network/dns/client setprop config/search = astring: "corecaixa"  
+
+#ou “extracaixa” ou “intercaixa”
+
+nscfg export network/dns/client
+svcadm refresh svc:/network/dns/client:default
+svcadm refresh name-service/switch
+
+- ip
+
+
+ipadm create-ip net0
+ipadm create-addr -T static -a 10.223.4.111/24 net0/v4
+route -p add default 10.223.4.1
+
+#########
+IPMP
+	
+ipadm create-ip net0
+ipadm create-ip net1
+ipadm create-ipmp -i net0 -i net1 sap0
+ipadm set-ifprop -p standby=on -m ip net1
+ipadm create-addr -T static -a 10.223.10.145/24 sap0
+ipadm
+route -p add default 10.223.10.1 -ifp sap0
+ipmpstat -g
+ipmpstat -a
+ipmpstat -t
+
+- repositorio
+
+rerop
+pkg set-publisher -G '*' -g http://10.192.32.243:10000 solaris
+
+data
+pkg set-publisher -G '*' -g http://10.222.64.62:10000 solaris
+
+M5
+pkg set-publisher -G '*' -g http://10.223.4.63:10000 solaris
+
+- atualizar os pacotes
+
+pkg update
+
+init 6
+
+- puppet
+
+echo "10.192.127.155  cx0000lx260.corecaixa   cx0000lx260" >> /etc/hosts
+
+pkg install puppet
+
+puppet agent -t --server cx0000lx260.corecaixa --environment solaris
+
+#svccfg -s puppet:agent setprop config/server=cx0000lx207.corecaixa
+#svccfg -s puppet:agent setprop config/environment=solaris
+#svccfg -s puppet:agent refresh
+#puppet agent -t
+#svcadm enable puppet
+
+
+- Configuração do Hosts
+
+
+
+echo "" >> /etc/hosts
+echo "#LDAP" >> /etc/hosts
+echo "10.192.192.25    	ldaps.caixa		openldap.corecaixa" >> /etc/hosts
+echo "" >> /etc/hosts
+
+echo "#NTP SERVERS" >> /etc/hosts
+echo "10.192.32.32    tic.caixa timeserver.caixa" >> /etc/hosts
+echo "10.192.32.33    tac.caixa timeserver1.caixa" >> /etc/hosts
+echo "10.252.32.32    toc.caixa timeserver2.caixa" >> /etc/hosts
+echo "" >> /etc/hosts
+
+echo "# TSM SERVER 2" >> /etc/hosts
+echo "10.192.176.25   pidfi2  pidfi2.coredf.caixa" >> /etc/hosts
+echo "10.192.176.35   pidfi   pidfi.coredf.caixa"  >> /etc/hosts
+echo "" >> /etc/hosts
+echo "#controlm" >> /etc/hosts
+echo "10.192.32.11    cx0000lx085" >> /etc/hosts
+
+
+- ssh
+
+sed 's/PermitRootLogin\ no/PermitRootLogin\ yes/g' /etc/ssh/sshd_config > /tmp/sshd_config ; mv /tmp/sshd_config /etc/ssh/sshd_config
+svcadm restart ssh
+svcadm enable ssh
+
+- pacotes adicionais
+
+pkg install vim ucb
+
+
+- ntp
+
+echo "server 10.192.32.32" > /etc/inet/ntp.conf
+echo "server 10.192.32.33" >> /etc/inet/ntp.conf
+echo "server 10.252.32.32" >> /etc/inet/ntp.conf
+echo "driftfile /var/ntp/ntp.drift" >> /etc/inet/ntp.conf
+echo "statsdir /var/ntp/ntpstats/" >> /etc/inet/ntp.conf
+echo "filegen peerstats file peerstats type day enable" >> /etc/inet/ntp.conf
+echo "filegen loopstats file loopstats type day enable" >> /etc/inet/ntp.conf
+
+ntpdate 10.192.32.32
+
+svcadm enable ntp
+
+- ajuste diretório home e suporte
+
+svcadm disable autofs
+df -h /home;sleep 5;umount /home;zfs create -o mountpoint=/home rpool/home;vi /etc/auto_home;vi /etc/auto_master;df -h /home
+zfs destroy rpool/export/home
+rm -rf /home
+zfs create -o mountpoint=/suporte rpool/suporte
+zfs create -o mountpoint=/home rpool/home
+zfs set volsize=20g rpool/swap
+zfs set volsize=8g rpool/dump
+
+
+- nsswitch
+
+svccfg -s name-service/switch setprop config/ipnodes = astring: '("files dns")'
+svccfg -s name-service/switch setprop config/host = astring: '("files dns")'
+svccfg -s name-service/switch setprop config/password = astring: '("files ldap")'
+svccfg -s name-service/switch setprop config/group = astring: '("files ldap")'
+svccfg -s name-service/switch setprop config/auth_attr = astring: '("files ldap")'
+svccfg -s name-service/switch setprop config/prof_attr = astring: '("files ldap")'
+svccfg -s name-service/switch setprop config/netgroup = astring: '("files ldap")'
+svccfg -s name-service/switch delprop config/network
+svccfg -s name-service/switch delprop config/protocol
+svccfg -s name-service/switch delprop config/rpc
+svccfg -s name-service/switch delprop config/ether
+svccfg -s name-service/switch delprop config/netmask
+svccfg -s name-service/switch delprop config/bootparam
+svccfg -s name-service/switch delprop config/publickey
+svccfg -s name-service/switch delprop config/netgroup
+svccfg -s name-service/switch delprop config/automount
+svccfg -s name-service/switch delprop config/alias
+svccfg -s name-service/switch delprop config/service
+svccfg -s name-service/switch delprop config/printer
+svccfg -s name-service/switch delprop config/project
+svccfg -s name-service/switch delprop config/tnrhtp
+svccfg -s name-service/switch delprop config/tnrhdb
+
+svcadm restart /system/name-service/switch:default
+
+#### Arquivo  ####
+
+root@sbrdedadux0004:/etc# cat nsswitch.conf
+
+#
+# _AUTOGENERATED_FROM_SMF_V1_
+#
+# WARNING: THIS FILE GENERATED FROM SMF DATA.
+#   DO NOT EDIT THIS FILE.  EDITS WILL BE LOST.
+# See nsswitch.conf(4) for details.
+
+passwd: files ldap
+group:  files ldap
+hosts:  files dns
+ipnodes:        files dns
+networks:       files
+protocols:      files
+rpc:    files
+ethers: files
+netmasks:       files
+bootparams:     files
+publickey:      files
+netgroup:       files
+automount:      files
+aliases:        files
+services:       files
+printers:       files
+project:        files
+auth_attr:      ldap files
+prof_attr:      ldap files
+tnrhtp: files
+tnrhdb: files
+sudoers:        files
+
+-------------------------------------------------------------
+root@sbrdedadux0004:/etc# cat nsswitch.ldap
+#
+# Copyright (c) 1999, 2010, Oracle and/or its affiliates. All rights reserved.
+#
+
+#
+# /etc/nsswitch.ldap:
+#
+# An example file that could be copied over to /etc/nsswitch.conf; it
+# uses LDAP in conjunction with files.
+#
+# "hosts:" and "services:" in this file are used only if the
+# /etc/netconfig file has a "-" for nametoaddr_libs of "inet" transports.
+
+# LDAP service requires that svc:/network/ldap/client:default be enabled
+# and online.
+
+# the following two lines obviate the "+" entry in /etc/passwd and /etc/group.
+passwd:     files ldap
+group:      files ldap
+
+# consult /etc "files" only if ldap is down.
+hosts:      files dns
+
+# Note that IPv4 addresses are searched for in all of the ipnodes databases
+# before searching the hosts databases.
+ipnodes:    files dns
+
+networks:   files
+protocols:  files
+rpc:        files
+ethers:     files
+netmasks:   files
+bootparams: files
+publickey:  files
+
+netgroup:   files
+
+automount:  files
+aliases:    files
+
+# for efficient getservbyname() avoid ldap
+services:   files
+
+printers:   user files
+
+auth_attr:  ldap files
+prof_attr:  ldap files
+user_attr:  ldap files
+
+project:    files
+
+tnrhtp:     files
+tnrhdb:     files 
+
+------------------------------------------------------------
+- ldapclient
+
+Solicitar que a segurança cadastre o servidor no openldap antes de executar os passos a seguir
+
+
+
+ldapclient manual -a defaultSearchBase=o=corecaixa -a bindTimeLimit=3 -a credentialLevel=proxy -a searchTimeLimit=30 -a defaultSearchScope=sub -a authenticationMethod=simple -a defaultServerList=ldaps.caixa -a serviceSearchDescriptor=shadow:o=corecaixa?sub -a serviceSearchDescriptor='passwd:o=corecaixa?sub?(&(objectClass=posixAccount)(|(host=cn=cx0000uxlab*)(perfil=SEG)(perfil=PRD)(perfil=SPI)))' -a serviceSearchDescriptor='group:o=corecaixa?sub?(&(objectClass=posixGroup)(|(host=cn=cx0000uxlab*)(perfil=SEG)(perfil=PRD)(perfil=SPI)))' -a serviceSearchDescriptor='user_attr:o=corecaixa?sub?&(objectClass=SolarisUserAttr)' -a serviceAuthenticationMethod=pam_ldap:tls:simple -a proxyDN=cn=bind,o=corecaixa -a proxyPassword={NS1}03fa16aa06537b5148 -a certificatePath=/var/ldap
+
+svccfg -s svc:/system/environment:init setprop environment/NSS_HASH_ALG_SUPPORT = astring: "+MD5"
+
+svcadm refresh svc:/system/environment:init
+svcadm restart svc:/system/environment:init
+svcadm restart /system/name-service/upgrade
+svcadm restart /system/name-service-cache
+svcadm restart /milestone/name-services
+svcadm restart ldap/client
+
+getent passwd
+
+for i in `getent passwd |cut -d: -f6 |grep home|grep -v opt`; do mkdir $i; done
+
+for i in `getent passwd |cut -d: -f6 |grep home|grep -v opt`; do USER=`echo $i|cut -d\/ -f3`; chown $USER $i; done
+
+
+- Pacotes padrores Solaris
+
+mkdir /suporte/Pacotes_Padroes_Solaris/
+cd /suporte/Pacotes_Padroes_Solaris/
+mkdir ../TSM ../ControlM ../OCS ../Zabbix ../SystemEdge
+mv inq.sol64 ../
+mv 7.1.1.0-TIV-TSMBAC-SolarisSparc.zip ../TSM/
+mv ctmage7.zip ../ControlM/
+mv Ocsinventory-Unix-Agent-2.1.1.zip ../OCS/
+mv zabbix_agents_2.2.5.solaris10.sparc.zip ../Zabbix/
+mv System_Edge_Solaris_sparc.zip ../SystemEdge/
+unzip EXPLORER_p20108681_8614129_SOLARIS64.zip
+chmod 777 install_stb.sh
+sh install_stb.sh 
+
+- TSM
+
+cd ../TSM
+unzip 7.1.1.0-TIV-TSMBAC-SolarisSparc.zip
+cd 7.1.1.0-TIV-TSMBAC-SolarisSparc
+pkgadd -n -a ./tsmadmin -d ./gsk8cry64.pkg gsk8cry64 ; pkgadd -n -a ./tsmadmin -d ./gsk8ssl64.pkg gsk8ssl64 ; pkgadd -n -a ./tsmadmin -d ./TIVsmCapi.pkg TIVsmCapi ; pkgadd -n -a ./tsmadmin -d ./TIVsmCba.pkg TIVsmCba ; vi /usr/bin/dsm.opt ; vi /usr/bin/dsm.sys ; dsmc
+cd ../../Pacotes_Padroes_Solaris/
+
+- Control-M
+
+cd ../ControlM
+unzip ctmage7.zip
+cd ctmage7
+cd etc/rc3.d/
+mv * /etc/rc3.d/
+cd ../../
+mv opt/ctmage /opt/
+chown -R ctmage:controlm /opt/ctmage/
+chmod -R 755 /opt/ctmage/
+chmod 777 /etc/rc3.d/S99ctmage /etc/rc3.d/K99ctmage
+sh /opt/ctmage/ctm/scripts/set_agent_mode ; su - ctmage -c "/etc/rc3.d/S99ctmage"
+cd ../../Pacotes_Padroes_Solaris/
+
+- Zabbix
+
+cd ../Zabbix
+unzip zabbix_agents_2.2.5.solaris10.sparc.zip
+cd zabbix_agents_2.2.5.solaris10.sparc
+mkdir /etc/zabbix
+cp -r conf/* /etc/zabbix/
+chmod 775 bin/*
+cp bin/* /usr/bin/
+chmod 775 sbin/zabbix_agent*
+cp sbin/zabbix_agent* /usr/sbin/
+cd ../../Pacotes_Padroes_Solaris/
+
+configurar o /etc/zabbix/zabbix_agentd.conf e criar script de inicialização
+
+cd -
+
+- SystemEdge
+
+cd ../SystemEdge
+unzip System_Edge_Solaris_sparc.zip
+dos2unix instalaSRM.sh instalaSRM.sh 
+dos2unix desinstalaSRM.sh desinstalaSRM.sh
+chmod -R 777 *
+sh instalaSRM.sh
+cd ../Pacotes_Padroes_Solaris/
+
+- OCS Inventory
+
+cd ../OCS/
+unzip Ocsinventory-Unix-Agent-2.1.1.zip
+cd Ocsinventory-Unix-Agent-2.1.1
+pkg install net-ssleay nmap xml-simple
+perl Makefile.PL
+make
+make install.......
+
+
+- Coleta
+
+
+
+
+
+

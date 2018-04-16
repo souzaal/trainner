@@ -1,0 +1,44 @@
+     As senhas de root dos servidores Unix foi devolvida à segurança.
+
+2     Portanto, foi necessário reconfigurar as roles para os devidos acessos das equipes da GEPEM e da equipe SIGNU.
+
+3     Todavia, o usuário 'oracle' não se trata de uma role, não podendo ser vinculado a um usuário.
+
+4     Desta forma, para que a equipe do SIGNU consiga fazer suas atividades de gestão do ambiente, é necessário 'setar' uma senha para o usuário oracle.
+
+5     Portanto, peço por gentileza que copiem o usuário oracle do LDAP e o configurem localmente (tanto no passwd como no shadow) APENAS nos servidores Unix abaixo:
+
+
+SID           HOSTNAME      
+
+BIP          DNGERPUX0012  - 10.223.10.32   sapBIP15 
+BID          CBRRPDESUX021 - 10.223.4.221   sapBID15 
+BIQ          CBRRPTQSUX023 - 10.223.4.226   sapBIQ15
+CXP          DNGERPUX0013  - 10.223.10.33   sapCXP15
+CXD          CBRRPDESUX022 - 10.223.4.222	sapCXD15
+CXQ          CBRRPTQSUX024 - 10.223.4.227	sapCXQ15
+CPP          DNGERPUX0014  - 10.223.10.34	sapCPP15 
+CPD          CBRRPDESUX023 - 10.223.4.223	sapCPD15
+CPQ          CBRRPTQSUX025 - 10.223.4.228	sapCPQ15 
+PPO          DNGERPUX0011  - 10.223.10.31	sapPPO15
+DPO          CBRRPDESUX019 - 10.223.4.219   sapDPO15
+QPO          CBRRPTQSUX022 - 10.223.4.225	sapQPO15
+SCP          DNGERPUX0010  - 10.223.10.30   sapSCP15
+SCD          CBRRPDESUX020 - 10.223.4.220   sapSCD15
+SCQ          CBRRPTQSUX021 - 10.223.4.224   sapSCQ15
+
+
+
+oracle:x:20000006:30000525:Conta de servico ORACLE Solaris:/home/oracle:/bin/bash
+
+
+svcadm disable svc:/network/ldap/client
+
+svcadm enable svc:/network/ldap/client
+
+
+a738631
+
+
+
+

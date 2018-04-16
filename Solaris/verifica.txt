@@ -1,0 +1,12 @@
+comando send receive
+
+zfs list -t snapshort
+
+zfs list -t snapshot -o snap2 | grep rpool@snap2 | tac | tail -n +16 | xargs -n 1 zfs destroy -r
+
+
+
+http://www.oracle.com/technetwork/articles/servers-storage-admin/howto-solaris-live-install-1599365.html
+
+
+https://www.google.com.br/#q=oracle+zpool+create+altroot+rpool+installboot

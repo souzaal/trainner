@@ -1,0 +1,21 @@
+ldm stop -f drag85
+ldm unbind drag85
+ldm ls
+ldm rm-domain drag85
+ldm ls
+ldm stop -f dragao85
+ldm rm-vdisk dragao85_vol0 dragao85
+ldm rm-vdsdev dragao85_vol0@primary-vds0
+ldm rm-vdsdev dragao85_vol0@iodomain-vds0
+ldm rm-vdsdev drag85-vol0@primary-vds0
+ldm rm-vdsdev drag85-vol0@iodomain-vds0
+ldm add-vdsdev mpgroup=dragao85_vol0 /dev/dsk/c0t60000970000592600102533034333145d0s2 dragao85_vol0@primary-vds0
+ldm add-vdsdev mpgroup=dragao85_vol0 /dev/dsk/c0t60000970000592600102533034333145d0s2 dragao85_vol0@iodomain-vds0
+ldm add-vdisk dragao85_vol0 dragao85_vol0@primary-vds0 dragao85
+ldm add-vdsdev mpgroup=dragao85_Sol10 /dev/dsk/c0t60000970000592600102533031354244d0s2 dragao85_Sol10@primary-vds0
+ldm add-vdsdev mpgroup=dragao85_Sol10 /dev/dsk/c0t60000970000592600102533031354244d0s2 dragao85_Sol10@iodomain-vds0
+ldm add-vdisk dragao85_Sol10 dragao85_Sol10@primary-vds0 dragao85
+ldm set-var boot-device=dragao85_vol0 dragao85
+ldm ls
+ldm start dragao85
+telnet console 5006

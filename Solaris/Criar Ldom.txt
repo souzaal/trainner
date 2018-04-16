@@ -1,0 +1,16 @@
+ldm add-domain ux943
+ldm set-core 1 ux943
+ldm set-memory 10G ux943
+ldm add-vnet pvid=1300 linkprop=phys-state vnet0 primary-appl-vsw0 ux943
+ldm add-vnet pvid=1300 linkprop=phys-state vnet1 iodomain-appl-vsw0 ux943
+ldm add-vnet pvid=1 linkprop=phys-state vnet2 iodomain-backup-vsw0 ux943
+ldm add-vnet pvid=91 linkprop=phys-state vnet3 primary-gerencia-vsw0 ux943
+ldm add-vnet pvid=91 linkprop=phys-state vnet4 iodomain-gerencia-vsw0 ux943
+ldm add-vdisk s11.iso solaris11_3_media@primary-vds0 ux943
+ldm add-vdsdev mpgroup=ux943_vol0 /dev/dsk/c0t60000970000592600102533031323843d0s2 ux943_vol0@primary-vds0
+ldm add-vdsdev mpgroup=ux943_vol0 /dev/dsk/c0t60000970000592600102533031323843d0s2 ux943_vol0@iodomain-vds0
+ldm add-vdisk ux943_vol0 ux943_vol0@primary-vds0 ux943
+ldm set-var auto-boot\?=false ux943
+ldm set-var boot-device=ux943_vol0 ux943
+ldm bind-domain ux943
+ldm start-domain ux943

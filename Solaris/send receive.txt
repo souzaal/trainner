@@ -1,0 +1,26 @@
+zpool create -fo altroot=/var/tmp/rpool -o cachefile=/etc/zfs/zpool.cache -m legacy rpool2 c1d1s0
+zfs snapshot -r rpool/ROOT@snap
+zfs send -R rpool/ROOT@snap|zfs receive -vFd rpool2 &
+
+zpool export rpool2
+zpool import -R /mnt rpool2
+zfs create -V 4g -b 8k rpool2/swap
+zfs create -V 4g rpool2/dump 
+zpool set bootfs=rpool2/ROOT/solaris rpool2
+installboot -F zfs /usr/platform/`uname -i`/lib/fs/zfs/bootblk /dev/rdsk/c1d1s0
+
+
+
+zfs set mountpoint=/ rpool2/ROOT/solaris
+zfs set mountpoint=/var rpool2/ROOT/solaris/var
+zfs set mountpoint=/export rpool2/export          
+zfs set mountpoint=/export/home rpool2/export/home
+zfs set mountpoint=/rpool2/VARSHARE/zones /system/zones
+
+zfs set mountpoint=/rpool2 rpool2/ROOT/solaris
+
+ zfs mount rpool2/ROOT/solaris
+
+alterar swap ( /mnt/rpool2/etc) no arquivo vfstab
+
+

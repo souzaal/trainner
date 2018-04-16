@@ -1,0 +1,1623 @@
+=====================================
+Instalação Solaris 10
+
+
+./installpatchset --s10patchset
+(Download patches recomendados, site oracle)
+
+======================================
+
+Support Identifier           19401485
+explorer -w default,smfextended, ldom
+==============================
+http://docs.oracle.com/cd/E35434_01/html/E23807/usingvlantaggingwithldoms.html
+==============================
+chown -R zabbix zabbix-agent /opt/zabbix /etc/zabbix /var/zabbix
+==============================
+echo ::memstat | mdb -k
+==============================
+SSH
+vi /etc/ssh/sshd_config
+LookupClientHostnames no
+Ciphers aes128-ctr,aes192-ctr,aes256-ctr,aes128-cbc,aes192-cbc,aes256-cbc,arcfour,arcfour128,arcfour256,3des-cbc,blowfish-cbc
+svcadm restart ssh
+==============================
+df -h |nawk '{print $6}'
+==============================
+ipcs -a
+ipcrm 
+==============================
+domain_status
+domain_switch cx0000ux226
+netcon -f 
+init 0
+bringup -A off
+bringup -A on
+boot
+==============================
+Coredump
+Reboot -d ou halt -d
+==============================
+boot -m milestone=none
+boot -m milestone=all
+boot vdisk0 -F failsafe
+==============================
+https://support.oracle.com/handbook_private/General/sparc_patch.html
+https://support.oracle.com/epmos/faces/DocumentDisplay?id=1449539.2
+How to restore access to a whole-disk zpool when the partition table was destroyed [ID 1482393.1]
+How to Force a Crash Dump When the Solaris Operating System is Hung (Doc ID 1004506.1)
+How to Collect System Crash Dump Images on Solaris 8 and Newer (Doc ID 1004803.1)
+Troubleshooting Suspected Solaris Operating System Hangs (Doc ID 1001950.1)
+1549180.1 - How to verify if a Solaris crash dump was created properly after a panic and find possible causes for known issues. (Classification: Assisted SR)
+1493610.1 - Can't reboot local zone with status shutting_down or down (Classification: Assisted SR)
+==============================
+GUI VERITAS
+pkgadd -d . VRTSobgui
+/opt/VRTSob/bin/vxsvcctrl activate
+/opt/VRTSob/bin/vxsvcctrl status
+/opt/VRTSob/bin/vea &
+==============================
+#Gerando chave para acesso
+ssh-keygen -p     #troca a frase
+ssh-keygen -t rsa #gera a chave
+scp -p id_rsa.pub 10.252.176.52:.ssh/authorized_keys
+==============================
+#date 101723592010.59
+==============================
+sync halt #derruba a máquina
+==============================
+tip hardwire #loga na console SC
+tip -9600 /dev/term/b
+boot #para subir a máquina
+==============================
+bc 
+scale=2
+numero/2097152
+1048576               = 500m
+2097152 = 1g
+===============================
+ativar a contabilidade estendida para processos, tarefas e fluxos
+
+Processo:
+acctadm -e extended -f /var/adm/exacct/proc process
+
+Tarefas
+acctadm -e extended,mstate -f /var/adm/exacct/task task
+
+Fluxo:
+acctadm -e extended -f /var/adm/exacct/flow flow
+
+Desativa: 
+
+acctadm -x process
+acctadm -x task
+acctadm -x flow
+==============================
+#T3
+#Conectar na bandeja
+telnet host_bandeja (root)(sun2001)
+#lista o status
+fru stat
+#Status da bateria T3
+.id read [controller] 
+refresh -s
+#Geração de explorer
+cd /suporte/t3/T4extractor-1.6
+./t3xtr
+hostname da bandeja
+senha: (sun2001)
+#Command
+vol list
+vol unmount vol
+vol remove vol
+
+==============================
+#limpar discos deletados da maquina
+drvconfig
+disks
+devfsadm -c disk -Cv
+vxdctl enable
+vxdctl initdmp
+==============================
+#discos com failed was
+vxdctl enable
+vxreattach
+==============================
+# Disassociar e remove plex
+vxplex -g rootdg -o rm dis plex
+# remove o plex
+vxedit -g rootdg -r rm plex
+
+# remove disco do dg
+vxdg -g rootdg rmdisk disk
+
+# remove o disco do veritas
+vxdisk rm disk
+
+# recuperar o fs
+umount /dev/vx/dsk/dg2/backup
+fsck -F vxfs -o full /dev/vx/dsk/dg2/backup
+vxedit -g dg2 set failing=off vsata180_01
+================================================================================
+devfsadm #aciona disco no s.o.
+format
+vxdctl enable # Aciona disco no veritas
+vxdisksetup -if c4t1d0 format=sliced
+vxdg -g dg1 adddisk dg103=c4t1d0
+================================================================================
+#criando/destruindo um novo diskgroup
+/usr/lib/vxvm/bin/vxdisksetup -i $DV format=sliced
+vxdg init dgcx disk1=c9t10d0 cds=off
+vxdg init dgcx disk1=c9t10d0
+vxdg destroy dgcx
+==================================================
+#copia os dados de um disco para o outro
+/usr/lib/vxvm/bin/vxevac -V -g dg3 dg2-100_01 dg2-100_02
+================================================================================
+vxprint -ht #mostra os discos com plex
+vxdisk list #mostra os discos
+vxdg free #tamanho livre dos discos disponiveis
+vxassist -g dg1 -U fsgen make global_oraias 3g user=oracle group=oracle#cria filesystem
+newfs /dev/vx/rdsk/dg1/global_oraias #formata filesystem
+vxvol -g dg1 stop cx0000ux809_producao #stop filesystem
+vxedit -g dg1 -rf rm cx0000ux809_producao #deleta filesystem
+vxprint -vt #mostra os files system e os status
+vxedit -g dg2 set user=oracle mode=644 volumecriado
+vxprint -vl volume
+vxassist -g dg1 -U gen make vdad_prod_siwfm03 500m layout=striped user=sybprd group=sybprd mode=0660
+vxedit -g rac_dg set user=oracle group=oracle prod02_festsdt000_06
+vxedit -g dg1 rename name_old name_new
+vxassist -g rac_dg -b make prod02_festsdt000_06 4g layout=striped stripeunit=128 ncolumn=10 alloc=emc47_02,emc47_03,emc47_05,emc47_04,emc47_06,emc47_07,emc47_11,emc47_12,emc47_01,emc47_09
+vxassist make swapvol 500m usetype=swap
+=== Importar disco
+vxconfigd -k #restart do processo veritas
+vxdisk -o alldgs list # lista os DGs de cada disk
+vxdisk list disk #listar para pegar o id do dg
+vxdg -f -C -n novonome import iddg #importa o dg
+vxvol -g diskgroup startall # habilitar todos os volumes
+vxprint -vl volume # listar o volume
+vxprint -vtg dg #listar todos os volumes
+vxencap -A -c -g rootdg -f sliced rootdisk=c0t0d0
+=== Desligar uma controladora
+/usr/sbin/vxdmpadm -f disable ctlr=c3
+=== Lista os disco com o nome no SO
+for i in `vxdisk -g dg2 list |nawk '{print $1}'`^Jdo^Jecho $i `vxdisk list $i |grep c3t5006048452A64BC7`^Jdone
+===========================================================
+/opt/VRTS/bin/fsck -F vxfs /dev/vx/rdsk/dg2/backup
+vxassist -g rootdg maxsize
+vxinstall                                                                              
+
+# Instalar o Volume M
+vxdiskadm                                                                        
+
+# Encapsula disco
+vxdisksetup -if ctd format=cdsdisk                         # inicializa-disco
+vxdisksetup -i c0t11d0 format=sliced                    # Inicializar os Disco
+vxdg -g rootdg adddisk rootmirror=c1t10d0       # Adicior o disco ao dg com o nome de rootmirror
+vxrootmir rootmirror                                                    
+
+# Espelhamento o rootdisk
+vxassist -g rootdg mirror swapvol rootmirror    # espelhamento swapvol
+vxassist -g rootdg mirror var rootmirror        # espelhamento var
+vxmirror -g dg1 disk newdisk                    # espelhar um disco completamente
+vxeeprom devalias vx-rootdisk /pci@19c,600000/pci@1/scsi@2/disk@a,0:a # aciona o alias
+vxassist -g rootdg -U swap make swapvol5 25816512 rootmirror
+
+#devalias vx-rootdisk /pci@19c,600000/pci@1/scsi@2/disk@a,0:a                         
+
+#/pci@19c,600000/pci@1/scsi@2/sd@a,0
+
+#devalias vx-rootmirror /pci@19c,600000/pci@1/scsi@2,1/disk@a,0:a #/pci@19c,600000/pci@1/scsi@2,1/sd@a,0
+vxeeprom devunalias vx-rootdg01                                        
+
+# remove o alias
+prtvtoc /dev/rdsk/c1t10d0s1 #Verificar a vtoc do disco
+fmthard # populate label on hard disks
+/etc/vx/bin/vxresize
+====
+mount -F ufs /dev/vx/dsk/dg1/cx0000ux079_websites /zones/zona01/root/websites
+mount -F lofs -o rw /producao /zones/zona11/root/producao 
+
+#compartilhado
+===============================================================================
+alter tablespace riptsix000 add datafile '/dev/vx/rdsk/dg2/riptsix000_02' size 10000m reuse;
+======================================================
+vi /etc/hosts # atualiza o arquivo para interface
+echo cx0000ux920 >/etc/hostname.ce8 #cria o arquivo para interface responder
+ifconfig ce8 plumb # Ativa a interface
+ifconfig ce8 inet 10.252.176.120 netmask 255.255.255.0 broadcast + up #configura a interface
+ifconfig ce8 # Lista a interface
+ifconfig ce8 unplumb # desativa a interface
+
+Interface HME0
+cd0000ux171 group ipmp1 up,
+addif cd0000ux171-teste1 -failover deprecated up
+
+Interface HME1
+cd0000ux171-teste2 group ipmp1 -failover deprecated standby up
+
+======================================================
+atualiza o pacotes na global e pegar os pacotes na console
+telnet 10.1.0.1 # acessa a console a patir de uma global
+cd /export/install/SOL10_807_SPARC/Solaris_10/Product # diretorio onde pegar tem os pacotes
+tar cfvp /tmp/pkg.tar SUNWarc SUNWbtool # tar para fazer uma arquivo dos pacotes
+ftp 10.1.0.1 # ftp para pegar o arquivo tar
+tar xfv /tmp/pkg.tar # tar para abrir o arquivo com os pacotes
+pkgadd -d . #instala os pacotes
+pkgadd -l SUNWarc SUNWbtool # para lista o pacotes instalados
+pkgrm SUNWaudio #remove o pacote
+====================================================== 
+
+share -F nfs /zones/zona03/root/upload
+
+==========================================================
+/etc/mail # makemap hash genericstable.db < genericstable
+/etc/mail # cd /etc/rc2.d
+/etc/rc2.d # ./S88sendmail stop
+/etc/rc2.d # ./S88sendmail start
+==========================================================
+Formatação de disco para instalação
+0 /                                          10240
+1 swap                                 2920
+2 overlap                            
+3
+4
+5 /var                                   4096
+6 
+==========================================================
+configuraçao de IP VIRTUAL - NAO É NECESSARIO CRIAR NO XML
+ifconfig ce2:3 plumb
+ifconfig ce2:3 inet 10.252.176.108 netmask + broadcast + up
+
+bge1 10.192.176.230 deprecated -failover netmask + broadcast + group C1 up
+bge3 10.192.176.144 deprecated -failover netmask + broadcast + group C1 up
+==========================================================
+PROJECT EM EXECUÇÃO
+Antes de alterar um paremetro no projeto verificar os valores que estão ativos em memory com o comando "prctl $$"
+ao final comparar os valores modificados com os valores antigos.
+
+prctl -n project.max-shm-memory -v 7516192768 -r -i project user.orades   
+prctl -n project.max-shm-memory -i project user.orades 
+
+
+PROJECT EM ARQUIVO - 26843545600
+
+projadd #novo projeto 
+projmod -a -K "project.max-shm-memory=(priv,4294967296,deny)" user.oracle #ADICIONA
+
+projmod -s -K "project.max-shm-memory=(priv,128849018880,deny)" user.orades #SUBSTITUI
+
+projmod -r -K "project.max-shm-memory=(priv,9126805504,deny)" user.orades #REMOVE
+
+projmod -s -U oracle -G oracle  user.oracle # ASSOCIA AO USUARIO
+
+prctl -r -t privileged -n zone.max-shm-memory -v 10737418240 -i zone cx0000ux092
+prctl -r -t system -n project.max-shm-memory -v 10737418240 -i zone cx0000ux092
+
+==========================================================
+rcapadm -z cx0000ux322 -m 24g
+prctl -n zone.max-swap -v 25g -t privileged -r -e deny -i zone cx0000ux092
+prctl -n zone.max-swap -v 25g -r -e deny -i zone cx0000ux092
+==
+projadd user.sjsas08 -U sjsas08  -c "Limitacao de CPU e Memoria"
+projmod -a -K "project.max-shm-memory=(priv,4294967296,deny)" user.sjsas08
+projmod -s -K "project.max-msg-ids=(priv,2048,deny)" default
+projects -l
+###########################################################################
+
+criar project Oracle RAC
+
+projadd none -U none -p 100 -c "grid"
+
+projadd user.oracle -U none -p 100 -c "oracle"
+
+projmod -a -K "project.max-shm-memory=(priv,107374182400,deny)" user.grid
+
+projmod -a -K "project.max-shm-memory=(priv,107374182400,deny)" user.oracle
+
+projmod -a -K "process.max-file-descriptor=(basic,4096,deny)" user.grid
+
+projmod -a -K "process.max-file-descriptor=(basic,4096,deny)" user.oracle
+
+projmod -a -K "project.max-shm-ids=(privileged,1024,deny)" user.oracle
+
+
+
+----------------------------
+Projdel user.grid
+
+###########################################################################
+
+prctl -n zone.cpu-shares -v 20 -r -i zone cx0000ux025
+prctl -n zone.cpu-shares -i zone cx0000ux526
+prctl -n zone.cpu-cap -v 400 -r -i zone cx0000ux526
+prctl -n zone.cpu-cap -i zone cx0000ux526
+
+
+prctl -n project.cpu-cap -r -v 700 -i project 30000114
+projmod -s -K "project.cpu-cap=(privileged,800,deny)" group.sas
+
+prctl -n project.cpu-cap -x -v 40 -i project user.sjsas02  <=== deletar
+==
+prctl -n project.max-swap -v 4g -t privileged -r -e deny -i project user.oracle
+prctl -n project.max-shm-memory -v 12884901888b -t privileged -r -e deny -i project user.oracle
+projmod -s -K "project.max-shm-memory=(priv,128849018880,deny)" group.sybase
+==
+prctl -n zone.max-file-descriptor -t basic -v 65535 -r -i zone cx0000ux091
+prctl -n process.max-file-descriptor -t basic -v 65535 -r -i process $$
+===
+projmod -s -K "project.max-sem-ids=(priv,1024,deny)" default   
+projmod -s -K "project.max-shm-ids=(priv,1024,deny)" default 
+projmod -s -K "project.max-msg-ids=(priv,1024,deny)" default 
+
+prctl -n zone.max-shm-ids -v 1024 -r -i zone cx0000ux821
+prctl -n zone.max-sem-ids -v 1024 -r -i zone cx0000ux821
+prctl -n zone.max-msg-ids -v 1024 -r -i zone cx0000ux821
+
+
+
+prctl -n project.max-msg-ids -r -v 1024 -i project 3
+prctl -n project.max-sem-ids -r -v 1024 -i project 3
+prctl -n project.max-shm-ids -r -v 1024 -i project 3
+prctl -n project.max-port-ids -r -v 2048 -i project 3
+prctl -n project.max-sem-ids -i project 3
+prctl -n project.max-msg-ids -i project 3
+prctl -n project.max-sem-ids -i project 3
+prctl -n project.max-shm-ids -i project 3
+prctl -i project 3
+
+==========================================================
+MONITORAÇÃO
+rcapstat -z
+iostat -cxn 1 5
+iostat -Mnxz
+netstat -in -I vnet0 5 40
+==========================================================
+* Usar o "prtdiag" para identificar o número de portas Ethernet existentes;     
+* Usar "netstat -i" em cada domínio e zone para identificar as portas Ethernet  
+físicas em uso;                                                                 
+* Usar o "vxdmpadm listctlr all" para identificar o total de conexões a disco e 
+quais estão ativas, e a diferença significa portas livres; e                    
+* Usar o "vxdmpadm getctlr all" para ajudar a identificar quais conexões são    
+SCSI (metálico) e quais são FC.
+==========================================================
+deleteboard -c unassign "board"
+addboard -d "dominio" -c configure "board"
+==========================================================
+SSH
+svcadm restart ssh
+svcs -a |grep ssh
+dmesg
+if_mpadm
+==========================================================
+Configuração e desconfiguração da placa
+cfgadm -al #Lista o Hardware
+cfgadm -c disconnect pcisch3:e06b1slot2 #disconnect o Hardware
+cfgadm -c connect pcisch3:e06b1slot2    #connect o Hardware
+cfgadm -c insert pcisch3:e06b1slot2     #insere o Hardware
+cfgadm -c remove                                          #remove o Hardware
+cfgadm -c configure                                      #configura o Hardware
+cfgadm -c unconfigure                                 #descofigure o Hardware
+==========================================================
+SSH
+ssh-keygen -t rsa1 -f /etc/ssh/ssh_host_key -N " "
+ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ""
+ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -N ""
+==========================================================
+TIVOLI IBM
+./itmcmd config -A ux #### cx0000nt153.corecaixa
+./itmcmd agent start all
+==========================================================
+LIST /pci@9c,600000/pci@1/scsi@2,1/disk  
+LIST /pci@9c,600000/pci@1/scsi@2/disk
+BOOT /pci@9c,600000/pci@1/scsi@2/disk@a,0:a
+
+LIST /pci@7c,600000/pci@1/scsi@2,1/disk
+     /pci@7c,600000/pci@1/scsi@2/disk
+BOOT /pci@7c,600000/pci@1/scsi@2/disk@8,0:a
+
+
+==========================================================
+zfs list
+zfs create zg1/ux009
+zfs create zg1/ux009/producao
+zfs destroy
+zfs mount
+zfs unmount
+zfs rename -p zg1/ux025/producao zg1/ux009/producao
+zfs set mountpoint=/producao zg1/ux009/producao
+zfs get mountpoint zg1/ux009/producao
+zfs set quota=10g zg1/ux009/producao
+zfs get quota, requota
+
+zfs set mountpoint=legacy zg1/ux009/producao
+zfs set compression=on zg1/ux009/producao
+
+
+zfs create -V 40G -b 8k rpool/swap2
+
+mount -F zfs zg1/ux009/producao /producao
+umount /producao
+zfs set sharenfs=on tank/home
+zfs unshare tank/home/tabriz
+
+zpool add rpool device
+zpool create dg disk
+#boot disk mirror
+fdisk /dev/rdsk/c4t1d0p0
+prtvtoc /dev/rdsk/c4t0d0p0 | fmthard -s - /dev/rdsk/c4t1d0p0
+installboot -F zfs /usr/platform/`uname -i`/lib/fs/zfs/bootblk /dev/rdsk/<backup disk>s0
+####zpool attach -f rpool c4t0d0s0 c4t1d0s0 #####zpool create pool mirror
+####vxassist -g dg make volume tamanho layout=striped stripeunit=128 ncolumn=10 alloc=disk1,disk2
+vxassist -g rac_dg make sysaux_01 2g layout=striped stripeunit=128 ncolumn=10 alloc=disk1,disk2
+============================================================
+/usr/sbin/vxdg  -n dg_ux240 import 1252441872.32.cd0000ux240
+/usr/sbin/vxrecover -b -s -g 1252441872.32.cd0000ux240
+/usr/sbin/vxdg  deport dg_ux240
+============================================================
+vxmend -g rootdg -o force off ctmage-01
+vxmend -g rootdg on ctmage-01
+vxmend -g rootdg fix clean ctmage-01
+vxvol -g rootdg start ctmage
+fsck -F
+
+vxmend -o force -g mydg fix empty vol
+============================================================
+find . -print | cpio -pdumv /zones/clone 
+============================================================
+# svcadm disable network/rpc/bind
+# svccfg delete network/rpc/bind
+# svccfg import /var/svc/manifest/network/rpc/bind.xml
+# svccfg import /var/svc/manifest/application/management/snmpdx.xml
+============================================================
+cat S99ce1100fdx
+/usr/sbin/ndd  -set /dev/ce instance 1
+/usr/sbin/ndd  -set /dev/ce adv_autoneg_cap 1
+/usr/sbin/ndd  -set /dev/ce adv_100hdx_cap 0
+/usr/sbin/ndd  -set /dev/ce adv_10hdx_cap 0
+/usr/sbin/ndd  -set /dev/ce adv_10fdx_cap 0
+/usr/sbin/ndd  -set /dev/ce adv_100T4_cap 0
+/usr/sbin/ndd  -set /dev/$1 adv_1000hdx_cap 0
+/usr/sbin/ndd  -set /dev/ce adv_1000fdx_cap 1
+/usr/sbin/ndd  -set /dev/ce adv_100fdx_cap 1
+
+ndd -get /dev/hme link_mode
+ndd -get /dev/hme link_speed
+netstat -k ce | egrep 'link_speed|link_status|link_duplex'
+/etc/init.d/nddconfig
+ln -s /etc/init.d/nddconfig /etc/rc2.d/S31nddconfig
+
+/platform/sun4u/kernel/drv/ce.conf
+
+
+=============================================================
+TRAVAMENTO DE SEÇÃO
+svcadm restart svc:/system/name-service-cache:default
+=============================================================
+PROBLEMA NO USUARIO NFS
+svcadm restart network/nfs/mapid      
+# share -F nfs -o rw=nfsclient1 -d "Home Directory" /export/home/<br />
+# mount -F nfs nfsserver:/export/home /export/home<br />
+NFSMAPID_DOMAIN in /etc/default/nfs 
+=============================================================
+Repository and Rebuilding
+cp /lib/svc/seed/global.db /etc/svc/repository.db
+
+/lib/svc/bin/restore_repository -r `pwd`
+
+=============================================================
+http://publib.boulder.ibm.com/tividd/td/TSMC/GC32-0789-03/pt_BR/HTML/ans50002.htm#ToC
+=============================================================
+pgrep -lf zoneadmd
+truss -p <pid>
+pkill -9 -z zonename
+umount -f /zonepath/zonename
+zoneadm -z zonename boot
+
+truss -eflda -rall -vall -wall -o /var/tmp/truss.path.out man /usr/bin/ps
+=============================================================
+rcfgadm -d f -c unconfigure sb8
+rcfgadm -d f -c disconnect sb8
+rcfgadm -d a -c connect sb8
+rcfgadm -d a -c configure sb8
+=============================================================
+backup.sh
+ufsdump 0f 10.1.0.1:/dev/rmt/0n /
+=============================================================
+dumpadm -d /syides01/rotina/GCODB001/vmcore/qualquernome
+dumpadm
+savecore -Lv 
+=============================================================
+taskkill /IM cmd.exe
+=============================================================
+/etc/opt/SUNWSMS/SMS1.6/config/R/.postrc
+=============================================================
+T3
+/opt/SUNWstade/DATA/rasagent.conf
+/usr/dt/bin/netscape
+=============================================================
+luxadm probe
+mpathadm list lu
+fcinfo hba-port |egrep "Device|Port WWN|State"
+fcinfo remote-port -lsp wwn
+prtconf -vp | grep wwn
+
+
+*cfgadm |grep fc-fabric #cfgadm -lv c6
+luxadm -e forcelip /dev/cfg/c6
+devfsadm -C
+cfgadm -al -o show_SCSI_LUN # encontrar novas luns
+cfgadm -al -o show_FCP_dev
+cfgadm -o force_update -c configure c6
+luxadm -e port
+luxadm -e dump_map /devices/ssm@0,0/pci@18,700000/SUNW,qlc@2/fp@0,0:devctl
+luxadm display  /dev/rdsk/c4t60000970000592600041533031433336d0s2
+modinfo | grep SunFC
+luxadm qlgc
+cd /etc/cfg/fp
+/suporte/inq.sol64 2>/dev/null | nawk '$0 ~ /15ae/,/15bd/ {print $0}'
+fc -e "${VISUAL:-${EDITOR:-vi}}" 256
+==============================================================
+# stmsboot -L
+/kernel/drv/fp.conf
+/kernel/drv/mpt.conf
+/kernel/drv/scsi_vhci.conf
+
+stmsboot -D mpt -e = Ativa multipathing para conexão scsi
+stmsboot -D fp -e = Ativa multipathing para conexão Fibra
+stmsboot -D mpt -d = Desativa multipathing para conexão scsi
+stmsboot -D fp -d = Desativa multipathing para conexão Fibra
+=====================================================================
+preap - force a defunct process to be reaped by its parent
+==============================================================
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5397/work01
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5411/work01
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5411/work02
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5411/work03
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5411/work04
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5397/work01
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5320/work01
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5347/work08
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5347/work06
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5031/work01
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5022/work01
+/opt/sas/bin/SAS_9.1/utilities/bin/cleanwork /sas/sas5008/work01
+================================================================
+/usr/ucb/ps -axuww
+ps -efo zone,pid,comm |grep cron  
+================================================================
+SUN CLUSTER
+/etc/inet/ntp.cluster
+vxdctl -c mode  # verificar que é o master
+scconf -p             # Display de informações
+scstat -g               # Display de informações
+scstat -p              # Display de informações
+scsetup -v
+scdidadm -L
+scswitch -S -h cd0000ux170
+scshutdown
+scswitch -n -j  rac_framework_rs,rac_udlm_rs,rac_cvm_rs
+scswitch -e -j  rac_framework_rs,rac_udlm_rs,rac_cvm_rs
+==
+ 
+clnode
+clnode status -v  
+
+
+clquorum (clq)
+clinterconnect (clintr) - clinterconnect status
+cldevice (cldev)
+clnasdevice (clnas)
+cluster
+cldevicegroup (cldg)
+clresourcegroup (clrg)
+clresource (clrs)
+clreslogicalhostname (clrslh)
+clressharedaddress (clrssa)
+
+==== SHUTDOWN
+cluster shutdown -g0 -y -i0  # Desliga todos os nodes do cluster
+clnode evacuate node         # Para parar um node do cluster (shutdown -g0 -y)
+
+==== DELETE DEVICE (DISK)
+cldevicegroup offline dsk/d2 dsk/d13
+cldevicegroup delete dsk/d2 dsk/d13
+                               
+
+=================================================================
+Netbackup
+/usr/openv/netbackup/bin/goodies/netbackup stop
+/usr/openv/netbackup/bin/goodies/bp.kill_all -FORCEKILL
+/usr/openv/netbackup/bin/bpps -a
+/usr/openv/netbackup/bin/goodies/netbackup start
+=================================================================
+WEBCONSOLE
+/usr/share/webconsole/private/bin/wcremove -i console
+svcadm clear system/webconsole:console
+svcadm enable system/webconsole:console
+==================================================================
+showrev -p|cut -c8-16
+==================================================================
+NFS vfstab
+10.192.230.55:/syides01/rotina/GJUDB001 -       /syides01/rotina/GJUDB001       nfs     -       yes     rw,soft
+==================================================================
+NFS
+/etc/dfs/dfstab # share -F nfs -o rw -d "PowerCenter DES - cxextrux061" /syides01/rotina/GJUDB001
+==================================================================
+sar
+cd /tmp;scp -r root@10.1.0.1:/export/install/SOL10_509_SPARC/Solaris_10/Product/SUNWaccu .;pkgadd -d . SUNWaccu
+cd /tmp;scp -r root@10.1.1.1:/export/install/Solaris_10_09/Solaris_10/Product/SUNWaccu .;pkgadd -d . SUNWaccu
+==================================================================
+flashupdate -d r -f /opt/SUNWSMS/hostobjs/sgcpu.flash
+#
+flashupdate -f /opt/SUNWSMS/firmware/SCOBPimg.di
+flashupdate -f /opt/SUNWSMS/firmware/SCOBPimg.di sc1/fp0
+flashupdate -f /opt/SUNWSMS/firmware/SCOBPimg.di sc1/fp1
+#
+flashupdate -f /opt/SUNWSMS/hostobjs/sgcpu.flash
+flashupdate -f /opt/SUNWSMS/hostobjs/sgcpu.flash location
+flashupdate -f /opt/SUNWSMS/hostobjs/sgcpu.flash SB0
+====================================================================
+tar cEpvf - . | ( cd /opt/sjsws_logs; tar xvfp - )
+tar cEpf - . | ( cd /opt/sunstudio12.1old; tar xfp - )
+====================================================================
+/platform/sun4u/boot_archive
+bootadm update-archive - sistema corrente
+bootadm update-archive -R /a - para corrigir o disco com problema
+fstyp /dev/rdsk/c1t0d0s0
+mount /dev/dsk/c13t10d0s0 /mnt
+fsck /dev/dsk/c13t10d0s0
+fsck /dev/dsk/c11t11d0s0
+=====================================================================
+cfgadm -alv|grep -i perm # Memoria permanente
+=====================================================================
+find . -type f -exec grep -i 6001 {} +
+=====================================================================
+/usr/bin/split -b 512m vmdump.tar
+=====================================================================
+1) e
+2) pkill -9 -z zonename  (from a second terminal)
+=====================================================================
+http://cx0000ux818.intranet.corecaixa:6001
+user:Administrator
+pass:Administrator
+http://cxextrux061.desenvolvimento.extracaixa:6007/
+user:admin
+pass:reropBR20
+http://cxextrux068.desenvolvimento.extracaixa:6001/
+user:Administrator
+pass:Administrator
+http://cx0000ux091.hmp.corecaixa:6001
+user:admin
+pass:admin
+http://cxextrux397.desenvolvimento.extracaixa:6001
+user: Administrator
+pass: Administrator
+http://cxextrux069.desenvolvimento.extracaixa:6001
+user: Administrator
+pass: reropBR20
+/opt/pcenter/PowerCenter8.6.1/server/tomcat/logs
+=====================================================================
+./installcluster --apply-prereq --s10patchset
+showrev -p | grep IDR;./installcluster --s10patchset
+./installcluster --s10cluster --disable-space-check
+=====================================================================
+XSCF> showdomainstatus -a
+DID         Domain Status
+00          Running - cx0000ux333
+01          Running - cx0000ux341
+02          Running - cx0000ux351
+03          Running - cx0000ux359
+04          Running - cx0000ux363
+05          Running - cx0000ux552
+06          Running - cxextrux113
+=====================================================================
+/opt/ar/cx0000ux080/AREmail/emaild.sh stop
+/opt/ar/cx0000ux080/AREmail/emaild.sh start
+/opt/ar/cx0000ux080/AREmail/Logs/emaild.sh_log
+=====================================================================
+SAR = SUNWaccu and SUNWaccr
+pkgadd -d . SUNWaccu SUNWaccr
+pkgadd -d . SUNWman
+==
+
+Suncluter
+http://www.symantec.com/business/support/index?page=content&id=TECH31110
+http://download.oracle.com/docs/cd/E18728_01/html/821-2852/gdxyb.html#ch8_ops-106
+=====================================================================
+zpool import rpool rpool
+zfs inherit -r mountpoint rpool/ROOT/sol10u8 rpool/ROOT/sol10u8
+zfs set mountpoint= rpool/ROOT/sol10u8 rpool/ROOT/sol10u8
+zfs mount rpool/ROOT/sol10u8 rpool/ROOT/sol10u8
+======================================================================
+Explorer STB
+https://support.oracle.com/CSP/main/article?cmd=show&type=NOT&id=1153444.1#explorer
+10_Recommended
+https://support.oracle.com/epmos/faces/PatchDetail?_adf.ctrl-state=75fbofl1z_160&patchId=Recommended+OS+Patchset+Solaris+10+SPARC&_afrLoop=32699957045775
+https://updates.oracle.com/download/12714436.html
+======================================================================
+/opt/sas/jboss-4.2.3.GA/bin/SASServer1.sh start
+/opt/sas/config/Lev1/sas.servers start
+/opt/sas/config/Lev1/sas.servers status
+==============
+./zabbix_get -s localhost -k system.cpu.util[system]
+======================================================================
+/opt/SUNWexplo/bin/explorer -w xscfextended,default
+snapshot -L F -t root@10.192.62.42:/suporte
+======================================================================
+Solaris 10
+pkgadd -d . SUNWeu8os
+pkgadd -d . SUNWladm
+localeadm -lc
+localeadm -lc -d /cdrom/cdrom0
+localeadm -lc -d .
+localeadm -a pt_BR.ISO8859-1 -d /cdrom/cdrom0
+localeadm -a pt_BR.ISO8859-1 -d .
+
+Solaris 11
+# pkg facet
+# locale -a
+# pkg change-facet facet.locale.pt=True
+# pkg change-facet facet.locale.pt_BR=True
+# pkg change-facet facet.locale.pt_*=True
+
+
+# pkg change-facet facet.locale.fr_FR=false
+# pkg change-facet facet.locale.zh_TW=false
+# pkg change-facet facet.locale.zh_CN=false
+# pkg change-facet facet.locale.de_DE=false
+# pkg change-facet facet.locale.es_ES=false
+# pkg change-facet facet.locale.it_IT=false
+# pkg change-facet facet.locale.ko_*=false
+# pkg change-facet facet.locale.ja_*=false 
+# pkg change-facet facet.locale.es=false
+# pkg change-facet facet.locale.de=false   
+# pkg change-facet facet.locale.zh=false   
+# pkg change-facet facet.locale.ko=false   
+# pkg change-facet facet.locale.it=false    
+# pkg change-facet facet.locale.fr=false     
+# pkg change-facet facet.locale.ja=false   
+
+# svccfg -s svc:/system/environment:init listprop
+# svccfg -s svc:/system/environment:init setprop environment/LANG = astring: pt_BR.ISO8859-1
+# svccfg -s svc:/system/environment:init listprop environment/LANG
+# svcadm refresh svc:/system/environment
+# locale -a
+# init 6
+# pkg install pkg:/system/locale/extra
+
+
+
+==============================================================
+mount -F hsfs sol-11-11-repo-full.iso /mnt
+zfs create -p -o atime=off -o compression=on rpool/export/install/solaris11
+rsync -aP /mnt/repo /export/install/solaris11
+pkgrepo -s /export/install/solaris11/repo refresh
+pkg set-publisher -G '*' -g /export/install/solaris11/repo solaris
+pkg list -a 'pkg://solaris/*'
+Configurar http://docs.oracle.com/cd/E23824_01/html/E24456/gljrq.html
+======================================================================
+Configuração de Role
+# usermod -K type=role root
+# usermod -R +root -A +solaris.system.maintenance darrenm
+# rolemod -K roleauth=user  root
+# passwd -N root
+# rolemod -K type=normal root # retirar a role
+# "login account required            pam_unix_account.so.1" >/etc/pam.conf
+
+========================================================================
+mailq -OQueueDirectory=/var/spool/mqueue.in
+========================================================================
+sysconfig configure #Interactively reconfigure the system.
+
+ldm add-vcpu 8 cx497 # ldm vcpu-core 4 PWCcx818
+ldm add-memory 4G cx497
+ldm add-vdisk iso_vols10 iso_vols10@primary-vds0 cx497
+zfs create -p -V 20G rpool/ldoms/t4-g1/disk0
+ldm add-vdsdev /dev/zvol/dsk/lpool1/cx497/rootdisk cx497_rootdisk@primary-vds0
+ldm add-vdisk cx497_rootdisk cx497_rootdisk@primary-vds0 cx497
+ldm set-var auto-boot\?=false cx497
+ldm set-var boot-device=rootdisk cx497
+ldm set-domain hostid=85e92821 cx497
+
+
+ldm set-var boot-device=/pci@680/pci@1/pci@0/pci@4/SUNW,qlc@0/disk@5000097a0801991d,2f
+
+boot [<root-device>] -Z rpool/ROOT/solaris-backup-1
+
+dladm modify-aggr -P L4 -L active -T short aggr3
+
+ldm add-io pci@400/pci@1/pci@0/pci@4 primary
+ldm list-services primary
+ldm remove-vsw apl-vsw0
+dladm show-vlan
+ldm list-services primary
+ldm start-conf primary
+ldm remove-io pci_1 primary
+ldm add-config pci1-config
+shutdown -i6 -g0 -y
+ldm add-io pci_1 cd203
+
+ldm show-phys
+
+=====
+ipadm create-ip vnet0
+ipadm create-addr -T static -a 10.223.4.82/24 vnet0/v4
+ipadm delete-ip 
+ipadm delete-addr
+
+=====
+ldm set-vswitch vid=1210,1211,1212,1213,1217,1218,1240,1280,1241,1610,1611,1612,1613,1618,1640,1641,1682,1410,1411,1413,1414,1417,1440,1441 apr-vsw0
+ldm add-vswitch vid=101,105,150,159,160,161,162,194,195,196,197,198,199,200,201,203,204,205,206,301,550,551,552,553,600,601,602,603,604,605,606,607
+
+ldm set-vswitch vid=101,150,160,161,162,200,201,203,204,205,206,210,211,553,603 intra-vsw0
+ldm add-vsw net-dev=aggr5 linkprop=phys-state vid=1780 dadossipcs-vsw0
+
+ldm add-vnet pvid=1211 vnic789422168 10.252.32.0_24 CMDBcx936
+
+ldm add-vnet pvid=101 vnet101 intra-vsw0 cx497
+ldm add-vnet pvid=198 linkprop=phys-state vnet0 apr-vsw1 APPLHcx2096
+ldm add-vnet pvid=198 linkprop=phys-state vnet1 apr-vsw0 APPLHcx2096
+
+ldm remove-vnet vnet101 intra-vsw0 cx497
+
+ldm add-vswitch vid=700,900,950 net-dev=aggr2 dados-vsw0 primary
+ldm add-vnet vid=900,950 vnet0 dados-vsw0 cd204
+ldm add-vnet vid=159,204 vnet0 intra-vsw0 cx2077
+
+ldm add-vnet pvid=2 linkprop=phys-state vnet0 primary-sap-vsw0 ldm01
+
+
+ldm add-vdsdev /dev/zvol/dsk/zg2012/cx2077/rootdisk cx2077_rootdisk@primary-vds0
+ldm add-vdsdev /dev/dsk/c0t60000970000592600041533032343742d0s2 cx2077_disk0@primary-vds0
+ldm add-vdisk cx2077_rootdisk cx2077_rootdisk@primary-vds0 cx2077
+ldm add-vdisk cx2077_disk0 cx2077_disk0@primary-vds0 cx2077
+=====
+ldm add-vdsdev mpgroup=mo7366ux0001-vol0 /dev/dsk/c0t60000970000592600102533031354145d0s2 mo7366ux0001-vol0@primary-vds0
+ldm add-vdsdev mpgroup=mo7366ux0001-vol0 /dev/dsk/c0t60000970000592600102533031354145d0s2 mo7366ux0001-vol0@iodomain-vds0
+ldm add-vdisk mo7366ux0001-vol0 mo7366ux0001-vol0@primary-vds0 mo7366ux0001
+ldm add-vds primary-vds1 primary
+ldm add-vds secondary-vds1 iodomain
+ldm add-vds primary-vds2 primary
+ldm add-vds secondary-vds2 iodomain
+=====
+ldm add-vsw inter-vnet-link=on inter-vsw0 primary
+ldm add-vnet net0 inter-vsw0 cx0000ux497
+=====
+dladm show-linkprop  net1
+dladm set-linkprop -t -p adv_autoneg_cap=1 net1
+dladm set-linkprop -t -p en_1000fdx_cap=1  net1
+dladm set-linkprop -t -p en_1000hdx_cap=0  net1
+dladm set-linkprop -t -p en_100fdx_cap=1   net1
+dladm set-linkprop -t -p en_100hdx_cap=0   net1
+dladm set-linkprop -t -p en_10fdx_cap=0    net1
+dladm set-linkprop -t -p en_10hdx_cap=0    net1
+==========================================================================
+show /HOST/bootmode
+show /HOST/domain/configs
+
+==========================================================================
+tar cf /suporte/ars_db/db_ux080.tar db Logs
+tar cf /suporte/ars_db/db_ux379.tar db Logs
+tar cf /suporte/ars_db/db_ux380.tar db Logs
+tar cf /suporte/ars_db/db_ux381.tar db Logs
+tar cf /suporte/ars_db/db_ux937.tar db Logs
+tar cf /suporte/ars_db/db_ux938.tar db Logs
+tar cf /suporte/ars_db/db_ux826.tar db Logs
+
+==========================================================================
+define(`confDONT_BLAME_SENDMAIL', `GroupWritableDirPathSafe')
+==========================================================================
+Adicionar repositorio
+pkg set-publisher -G '*' -g http://10.192.32.243:10000 solaris
+
+Instalar
+pkg install system/solaris-desktop slim_install library/motif compatibility/ucb
+
+Atualizar 
+pkg updade
+==========================================================================
+sqlplus '/as sysdba'
+lsnrctl start
+lsnrctl status
+lsnrctl stopt
+==========================================================================
+uname -a;cat /etc/release
+format
+zpool status
+netstat -i
+crontab -l;ps -fu zabbix;ps -ef |grep ctm;ps -ef |grep coleta
+===========================================================================
+for i in `zoneadm list |grep -v global`;do;zlogin $i /etc/rc2.d/S71zabbix;done
+===========================================================================
+====================================================
+#FULL
+zfs set compression=on zprisco_new
+zfs snapshot -r zprisco@snap1
+zfs send zprisco@snap1 | zfs receive -F zprisco_new@snap1 &
+zfs send zprisco/cx0000ux1046@snap1 | zfs receive -F zprisco_new/cx0000ux1046@snap1 &
+zfs send zprisco/cx0000ux1046/opt@snap1 | zfs receive -F zprisco_new/cx0000ux1046/opt@snap1 &
+#INCREMENTAL
+zfs snapshot zprisco/cx0000ux1046/opt/oracle@snap2
+zfs send -i zprisco/cx0000ux1046/opt/oracle@snap1 zprisco/cx0000ux1046/opt/oracle@snap2 | zfs receive -F zprisco_new/cx0000ux1046/opt/oracle@snap1
+zfs send -i zprisco/cx0000ux1046/opt/oracle@snap1 zprisco/cx0000ux1046/opt/oracle@snap2 | zfs receive -F zprisco_new/cx0000ux1046/opt/oracle
+======
+zpool create -fo altroot=/var/tmp/rpool -o cachefile=/etc/zfs/zpool.cache -m legacy mpool c0d3s0
+zfs snapshot -r rpool@11042014
+zfs send rpool@11042014 |zfs receive -F mpool@11042014 &
+zfs send rpool/ROOT@11042014 |zfs receive -F mpool/ROOT@11042014 &
+zfs send rpool/ROOT/s10s_u11wos_24a@11042014 |zfs receive -F mpool/ROOT/s10s_u11wos_24a@11042014 &
+zfs send rpool/ROOT/s10s_u11wos_24a/var@11042014 |zfs receive -F mpool/ROOT/s10s_u11wos_24a/var@11042014 &
+zfs send rpool/export@11042014 |zfs receive -F mpool/export@11042014 &
+zfs send rpool/export/home@11042014 |zfs receive -F mpool/export/home@11042014 &
+zpool export mpool
+zpool import -R /mnt mpool
+zfs create -V 60g -b 8k mpool/swap
+zfs create -V 8g mpool/dump 
+zfs set mountpoint=/ mpool/ROOT/s10s_u11wos_24a
+zfs set mountpoint=/export mpool/export          
+zfs set mountpoint=/export/home mpool/export/home
+zpool set bootfs=mpool/ROOT/s10s_u11wos_24a mpool
+installboot -F zfs /usr/platform/`uname -i`/lib/fs/zfs/bootblk /dev/rdsk/<backup disk>s0
+=====================================================
+/usr/lib/ldap/ldap_cachemgr -g
+=====================================================
+for i in `echo 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16`; do beadm destroy -F solaris-1-backup-$i; done
+=====================================================
+
+DNS
+svccfg -s network/dns/client listprop config
+listprop config
+svccfg -s network/dns/client setprop config/nameserver = net_address: "(10.252.32.9 10.252.32.18 10.192.10.73 10.192.10.74)"          #DATACENTER
+svccfg -s network/dns/client setprop config/nameserver = net_address: "(10.192.32.50 10.192.32.51 10.192.32.9)"                                    #511N
+svccfg -s network/dns/client setprop config/domain = astring: "corecaixa"  #ou “extracaixa” ou “intercaixa”
+svccfg -s network/dns/client setprop config/search = astring: "corecaixa"  #ou “extracaixa” ou “intercaixa”
+svccfg -s network/dns/client setprop config/search = astring: "corecaixa"
+
+nscfg export network/dns/client
+svcadm enable svc:/network/dns/client:default
+svcadm refresh name-service/switch
+
+TIMEZONE
+svccfg -s timezone:default setprop timezone/localtime= astring: '("Brazil/East")'
+svccfg -s timezone:default listprop timezone
+
+
+NSSWITCH.CONF
+Obs: O /etc/nsswitch.ldap dever ser alterado manualmente.
+
+svccfg -s name-service/switch listprop config 
+listprop config
+svccfg -s name-service/switch
+setprop config/ipnodes = astring: "files dns"
+setprop config/host = astring:  "files dns"
+setprop config/password = astring: "files ldap"
+setprop config/group = astring: "files ldap"
+setprop config/auth_attr = astring: "files ldap"
+setprop config/prof_attr = astring: "files ldap"
+setprop config/netgroup = astring: "ldap files"
+
+#setprop config/user_attr = astring: "files ldap"
+
+delprop config/network  
+delprop config/protocol 
+delprop config/rpc      
+delprop config/ether    
+delprop config/netmask  
+delprop config/bootparam
+delprop config/publickey
+delprop config/netgroup 
+delprop config/automount
+delprop config/alias    
+delprop config/service  
+delprop config/printer  
+delprop config/project  
+delprop config/tnrhtp   
+delprop config/tnrhdb   
+exit
+nscfg export name-service/switch
+svcadm refresh name-service/switch
+svccfg -s name-service/switch listprop config
+
+svccfg -s svc:/system/environment:init
+setprop environment/NSS_HASH_ALG_SUPPORT = astring: "+MD5"
+svcadm refresh svc:/system/environment:init
+svcadm restart svc:/system/environment:init
+svcadm restart ldap/client
+svcadm restart name-service-cache
+
+svccfg -s nis/domain setprop config/domainname = hostname: corecaixa
+svccfg -s nis/domain refresh
+svcadm enable nis/domain
+cat /etc/defaultdomain
+
+== NODENAME
+svccfg -s system/identity:node setprop config/nodename="my-host-name"
+svccfg -s system/identity:node setprop config/loopback="my-host-name"
+svccfg -s system/identity:node refresh
+svcadm restart system/identity:node
+
+== NFS
+
+sharectl get nfs
+sharectl set -p nfsmapid_domain=intranet.corecaixa nfs
+
+zfs create -o mountpoint=/producao rpool/producao
+zfs set share=name=producao,path=/producao,prot=nfs rpool/producao
+                                           prot=nfs,sec=sys,root=*,rw=*
+zfs set sharenfs=on rpool/producao
+
+=====================================================
+beadm list
+beadm destroy -F solaris-1
+beadm list
+beadm create -p rpool solaris-1
+beadm list
+beadm create -p rpool solaris-backup-1
+beadm activate solaris-1
+=====================================================
+sed 's/hosts:      files ldap/hosts:      files dns/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/ipnodes:    files ldap/ipnodes:    files dns/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/networks:   files ldap/networks:   files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/protocols:  files ldap/protocols:  files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/rpc:        files ldap/rpc:        files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/ethers:     files ldap/ethers:     files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/netmasks:   files ldap/netmasks:   files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/bootparams: files ldap/bootparams: files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/publickey:  files ldap/publickey:  files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/netgroup:   ldap/netgroup:   files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/automount:  files ldap/automount:  files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/aliases:    files ldap/aliases:    files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/services:   files ldap/services:   files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/printers:   user files ldap/printers:   user files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/project:    files ldap/project:    files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/tnrhtp:     files ldap/tnrhtp:     files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/tnrhdb:     files ldap/tnrhdb:     files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+sed 's/prof_attr:  files ldap/prof_attr:  ldap files\!user_attr: ldap files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+vi /etc/nsswitch.ldap
+#sed 's/prof_attr:  files ldap/prof_attr:  ldap files\!user_attr:  ldap files/' /etc/nsswitch.ldap >/tmp/nsswitch.ldap;mv /tmp/nsswitch.ldap /etc
+#tr -s '!' '\13' </etc/nsswitch.ldap
+===============
+df -h /home;sleep 5;umount /home;zfs create -o mountpoint=/home rpool/home;vi /etc/auto_home;vi /etc/auto_master;df -h /home
+===============
+1a - Limpar o componente:
+
+-> set /SYS/MB clear_fault_action=true
+-> set /SYS/PCI-EM0 clear_fault_action=true
+-> set /SYS/PCI-EM1 clear_fault_action=true
+-> set /SYS/PCI-EM2 clear_fault_action=true
+-> set /SYS/PCI-EM3 clear_fault_action=true
+
+2a - Limpar o log de fma
+
+-> start /SP/faultmgmt/shell
+faultmgmtsp> fmadm repair da236b9e-222e-6f1a-aabf-c0876ea883c7
+faultmgmtsp> fmadm repair 3ec8c4a3-5f5f-ea3a-b8da-c9754893935f
+faultmgmtsp> fmadm repair 0d262ba1-6fe6-6b5f-f9e3-cbe27e498012
+faultmgmtsp> fmadm repair 537df42f-adb8-e4c7-f303-8203d2ef9008
+
+3a. Checar se todas as falhas foram limpas
+
+faultmgmtsp> fmadm faulty
+faultmgmtsp> exit
+=================
+OPS
+/var/tmp/ACS/OpsCenter/OCDoctor
+/opt/SUNWxvmoc/bin/ecadm PARAMETRO
+/opt/SUNWxvmoc/bin/proxyadm PARAMETRO
+/opt/SUNWxvmoc/bin/agentadm PARAMETRO
+/var/opt/sun/xvm
+
+=================
+vi /etc/hosts
+ipadm create-ip net0
+ipadm create-ip net1
+netadm list -p ncp -x
+ipadm
+ipadm create-ipmp -i net0 -i net1 sap_intra0
+svccfg -s svc:/network/ipmp setprop config/transitive-probing=true
+svccfg -s svc:/network/ipmp listprop config/transitive-probing
+svcadm refresh svc:/network/ipmp:default
+ipadm set-ifprop -p standby=on -m ip net1
+ipadm create-addr -T static -a 10.223.4.52/24 sap_intra0/v4
+#ipadm set-addrprop -p deprecated=on ipmp1/v42
+route -p delete default 10.223.4.1
+route -p add default 10.223.4.1 -ifp sap_intra0
+ipmpstat -g
+ipmpstat -a
+ipmpstat -t
+=================
+pkg unset-publisher solaris
+pkg set-publisher -G '*' -M '*' -g http://example.com:10000 solaris             #Remove todos e set um novo
+pkg set-publisher -G '*' -M '*' -g http://192.168.1.6/solaris/ solaris
+pkg list -f -g http://10.223.4.62/
+pkg list -a 'pkg://solaris/*'                                                   #Lista os pacotes
+svccfg -s application/pkg/server setprop pkg/inst_root=/export/repoSolaris11_1  #troca o repositorio no server
+svcadm restart application/pkg/server
+
+rerop
+pkg set-publisher -G '*' -g http://10.192.32.243:10000 solaris
+
+data
+pkg set-publisher -G '*' -g http://10.222.64.62:10000 solaris
+
+M5
+pkg set-publisher -G '*' -g http://10.223.4.63:10000 solaris
+
+
+================
+/opt/CA/SystemEDGE/bin/sysedgectl stop
+vi /opt/CA/SystemEDGE/config/port1691/sysedge.cf
+template community <name> <access> <addresses>
+community 1mcaRW read-write
+community C0mmun5nmP read-only
+
+template trap_community <name> <address> <port> <encoding> <source>
+trap_community private 10.192.127.83 162
+/opt/CA/SystemEDGE/bin/sysedgectl start
+
+==================
+
+ls -l /dev/cfg/PCI-EM* | nawk '{print substr($11,14,26),1,$9}' OFS="\t">/tmp/cfg.txt
+ls -l /dev/cfg/c[0-9]* | nawk '{print substr($11,14,26),2,$9}' OFS="\t" >>/tmp/cfg.txt
+
+sort /tmp/cfg.txt | nawk -F\t '
+$2 == 1 {
+        pci = $1
+        em = $3
+        next
+}
+$1 == pci {
+        print $3,1,em,pci
+} ' OFS="\t" >/tmp/$$
+
+fcinfo hba-port -l | sed 's/: /:/g' | nawk -F: '$1 ~ /HBA Port WWN/ {wwn = $2; next} $1 ~ /OS Device Name/ { print $2,2,wwn }' OFS="\t">>/tmp/$$
+
+sort /tmp/$$ | nawk -F\t '
+$2 == 1 {
+        cfg = $1
+        em = $3
+        pci = $4
+        next
+}
+$1 == cfg {
+        print em,cfg,$3,pci
+} ' OFS="\t" >cfg.`hostname`.txt
+
+fcinfo hba-port |egrep "Device|Port WWN|State"
+
+=================
+for a in `cat list` ; do /suporte/inq.sol64 -sym_wwn 2>/dev/null |grep -i $a |awk '{print $1 "\t" $3}' >> /tmp/discos; done
+for a in `cat list` ; do /suporte/inq.sol64 2>/dev/null|grep -i $a |awk '{print $1 "\t" $4 "\t" $5}';  done
+
+
+
+inq.sol64 -nodots | grep 0fcd
+
+=================
+boot net dbcp: - install
+=================
+# beadm mount solaris-1 /mnt
+# export LC_ALL="C"
+# bootadm update-archive -R /mnt
+=================
+/usr/local/bin/curl -T /tmp/explorer.84fa4082.cxextrux2297-2014.09.02.12.20.tar.gz -x 10.192.35.38:80 -k -o /tmp/output.txt -u "ceptibr20@caixa.gov.br" "https://transport.oracle.com/upload/issue/3-9556265101/"
+
+
+check Total physical memory:
+
+# prtdiag -v | grep Memory
+
+# prtconf | grep Memory
+
+---
+
+check Free physical Memory:
+
+# top (if available)
+
+# sar -r 5 10
+Free Memory=freemen*8 (pagesize=8k)
+
+# vmstat 5 10
+Free Memory = free
+
+---
+
+For swap:
+
+# swap -s
+# swap -l
+
+===========================
+Verificar memória disponível na DCU
+
+ldm ls-devices -a mem
+
+ldm list-devices memory
+
+===========================
+Rescan HBA
+
+Solaris
+
+1. Determine the FC channels:
+
+ cfgadm -al
+
+2. Force rescan :
+
+ cfgadm -o force_update -c configure cx
+
+Where x is the FC channel number
+
+3. Force rescan at HBA port level:
+
+ luxadm -e forcelip /dev/fc/fpx
+
+4. Force rescan on all FC devices:
+
+ cfgadm -al -o show_FCP_dev
+
+5. Install device files:
+
+ devfsadm
+
+6. Display all Qlogic HBA ports
+
+ luxadm -e port
+
+7. Display HBA port information
+
+ luxadm -v display <WWPN>
+
+8. Display HBA port information
+
+ luxadm -e dump_map
+ 
+======================================
+Montagem volume Infiniband
+
+192.168.164.220:/export/zfs12_dngerpux002_ux003_smp     -       /backup/zfs/SMP nfs     -       yes     rw,bg,hard,nointr,rsize=1048576,wsize=1048576,proto=tcp,vers=3,forcedirectio
+
+
+=======================================
+
+Configurar IPMP solaris 10
+
+ifconfig vnet2 plumb
+ifconfig vnet3 plumb
+
+ifconfig vnet2 deprecated -failover netmask + broadcast + group ipmp2 up
+ifconfig vnet3 deprecated -failover netmask + broadcast + group ipmp2 up
+
+ifconfig vnet2 addif 10.222.16.13 netmask + broadcast + up
+
+echo "deprecated -failover netmask + broadcast + group ipmp2 
+up" >> /etc/hostname.vnet2
+
+echo "addif 10.222.16.12 netmask + broadcast + up" >> /etc/hostname.vnet2
+echo "deprecated -failover netmask + broadcast + group ipmp2 up" >> /etc/hostname.vnet3
+
+
+========================================
+
+zfs send and receiver
+
+zfs snapshot -r zg213/zones@snap1
+zfs send zg213/zones@snap1 | zfs receive -F zg213_new/zones@snap1 &
+zfs send zg213/zones/cxextrux216@snap1 | zfs receive -F zg213_new/zones/cxextrux216@snap1 &
+zfs send zg213/zones/cxextrux215@snap1 | zfs receive -F zg213_new/zones/cxextrux215@snap1 &
+
+#INCREMENTAL
+zfs snapshot zg213/zones@snap2
+zfs send -i zg213/zones/cxextrux216@snap1 zg213/zones/cxextrux216@snap2 | zfs receive -F zg213_new/zones/cxextrux216@snap1
+zfs send -i zg213/zones/cxextrux215@snap1 zg213/zones/cxextrux215@snap2 | zfs receive -F zg213_new/zones/cxextrux215@snap1
+
+
+========================================
+
+Configurar discos Oracle LDOM
+
+Part      Tag    Flag     Cylinders         Size            Blocks
+  0 unassigned    wu       0                0         (0/0/0)             0
+  1 unassigned    wu       0                0         (0/0/0)             0
+  2 unassigned    wu       0                0         (0/0/0)             0
+  3 unassigned    wu       0                0         (0/0/0)             0
+  4 unassigned    wu       0                0         (0/0/0)             0
+  5 unassigned    wu       0                0         (0/0/0)             0
+  6        usr    wm       3 - 65531       99.83GB    (65529/0/0) 209365155
+  7 unassigned    wu       0                0         (0/0/0)             0
+
+dd if=/dev/zero of=/dev/rdsk/c2d7s6 bs=1024 count=1000
+
+chown grid:oracle /devices/virtual-devices@100/channel-devices@200/disk@6:e,raw
+chmod 660 /devices/virtual-devices@100/channel-devices@200/disk@6:e,raw
+
+
+###########################################
+Serial number
+
+sneep
+
+###########################################
+
+Verificar interface
+
+igb -> ../devices/pseudo/clone@0:igb
+lrwxrwxrwx   1 root     root          51 Oct 23  2013 igb0 -> ../devices/pci@400/pci@1/pci@0/pci@2/network@0:igb0
+lrwxrwxrwx   1 root     root          53 Oct 23  2013 igb1 -> ../devices/pci@400/pci@1/pci@0/pci@2/network@0,1:igb1
+lrwxrwxrwx   1 root     root          51 Oct 23  2013 igb2 -> ../devices/pci@600/pci@2/pci@0/pci@3/network@0:igb2
+lrwxrwxrwx   1 root     root          53 Oct 23  2013 igb3 -> ../devices/pci@600/pci@2/pci@0/pci@3/network@0,1:igb3
+
+caminha  \dev 
+
+#########################################
+
+Criação de aggregation
+
+dladm create-aggr -l net1 -l net3 
+
+dladm add-aggr -l net1 aggr1
+
+###########################################
+
+User Site Oracle
+
+
+https://login.oracle.com/mysso/signon.jsp
+
+Usuario: ceptibr20@caixa.gov.br
+Senha: reropBR20
+
+
+
+##########################################
+
+**Iniciando zone**
+ 
+zoneadm -z cxextrux047 boot
+
+**lista zone**
+
+zoneadm list -iv
+
+#########################################
+
+## Inicia maquina##
+
+ldm start LABclientpuppet
+
+##Para maquina##
+
+ldm stop LABclientpuppet
+
+##Acessa maquina##
+  
+telnet console 5012
+
+##Lista configuração##
+
+  ldm ls -l LABclientpuppet
+
+##Remove o disk## 
+
+   ldm rm-vdisk LABclientpuppet-vol0 LABclientpuppet
+
+##Adicina Disco## 
+
+   ldm add-vdisk LABclientpuppet-vol0 LABclientpuppet-vol0@primary-vds0 LABclientpuppet
+
+  
+  506  ldm add-vdisk LABclientpuppet-vol1 LABclientpuppet-vol1@primary-vds0 LABclientpuppet
+
+  
+  517  cd bkp/
+  518  ls
+  519  ldm ls
+  
+  521  ldm unbind LABclientpuppet
+  
+  523  ldm destroy LABclientpuppet
+  524  ldm ls
+
+
+
+  442  ldm ls
+  443  ldm ls -l LABclientpuppet
+  444  ldm ls -l primary | grep LAB
+  445  cd /dev/zvol/dsk/rpool/guests/LABclientpuppet/
+
+
+  466  ldm add-vdisk LABclientpuppet-vol0 LABclientpuppet-vol1@primary-vds0 LABclientpuppet
+
+  494  ldm ls -l primary | grep sol
+
+
+  496  ldm add-vdisk sol11.2 solaris11-2_media@primary-vds0 LABclientpuppet
+
+
+
+  499  ldm add-domain cx0000uxlab
+  500  ldm add-vcpu 1 cx0000uxlab
+  501  ls
+  502  cat LABclientpuppet_21-08-2015-05h00.xml
+  503  ldm add-memory 4G cx0000uxlab
+
+  505  ldm ls -l primary
+
+  507  ldm ls -l iodomain
+
+  509  ldm ls-io
+  
+
+511  dladm show-aggr -X
+  512  dladm show-aggr -x
+  513  dladm show-phys -l
+  514  dladm show-phys -L
+  
+
+
+515  ldm ls -l primary
+  516  ldm ls -l primary | grep LAB
+  517  ldm ls -l iodomain | grep LAB
+
+
+ ldm add-vdsdev
+ 
+ 
+ldm add-vdsdev mpgroup=cx0000uxlab-vol0 /dev/zvol/dsk/rpool/guests/LABclientpuppet/rootdisk cx0000uxlab-vol0@primary-vds0
+
+ldm add-vdsdev mpgroup=cx0000uxlab-vol0 /dev/zvol/dsk/rpool/guests/LABclientpuppet/rootdisk cx0000uxlab-vol0@iodomain-vds0
+
+  526  ldm add-vnet
+
+
+  531  ldm bind cx0000uxlab
+  532  ldm ls
+  
+  
+534  ldm set-var auto-boot?=false cx0000uxlab
+
+  535  ldm ls -l cx0000uxlab
+
+  536  ldm start     threading=max-throughput
+
+  537  VARIABLES
+
+  538      auto-boot?=false
+
+  539  ldm ls -l primary | grep sol
+
+  540  ldm add-vdisk sol11 solaris11-2_media@primary-vds cx0000uxlab
+
+  541  ldm add-vdisk sol11 solaris11-2_media@primary-vds0 cx0000uxlab
+
+
+  549  ldm add-vdisk cx0000uxlab-vol0 cx0000uxlab-vol0@primary-vds0 cx0000uxlab
+  
+
+
+550  ldm ls -l cx0000uxlab
+  551  ldm rm-vdisk sol11 cx0000uxlab
+  552  ldm rm-vdisk cx0000uxlab-vol0 cx0000uxlab
+  553  ldm ls
+  554  ldm ls -l cx0000ux383
+  555  ldm ls -l primary
+  
+
+Remove disk
+
+ ldm rm-vdisk cx0000uxlab-vol0 cx0000uxlab
+
+ ldm rm-vdsdev cx0000uxlab-vol0@primary-vds0
+  
+
+  
+## Renomea nome Volume ##
+ ldm add-vdsdev mpgroup=cx0000uxlab_vol0 /dev/zvol/dsk/rpool/guests/cx0000uxlab/rootdisk cx0000uxlab_vol0@primary-vds0
+ 
+ 
+ ## Recurso Primary ## 
+ 
+ldm list-devices disk
+
+ldm list-devices cpu
+
+  
+
+
+  571  ldm add-vdisk cx0000uxlab_vol0 cx0000uxlab_vol0@primary-vds0 cx0000uxlab
+ 
+ 572  ldm ls -l primary | sol
+  573  ldm ls -l primary | grep sol
+  
+
+574  ldm add-vdisk sol11  solaris11-2_media@primary-vds0 cx0000uxlab
+
+
+  ldm ls -l cx0000uxlab
+
+
+Criação de Vnet 
+
+ldm add-vnet pvid=143 linkprop=phys-state vnet2 primary-aprsnt-vsw0 cx0000uxlab
+
+##########################################################################
+
+Comando para para o reload na scsi |(Usado para quando não reconhecer a LUN)
+
+Primeiro executar o comando hbaindo e adiciona todos que estão online 
+
+cfgadm -c configure c3 
+
+###########################################################################
+
+fcinfo hba-port ( Verificar as WWN)
+
+###########################################################################
+
+Instalação VNCServer
+
+pkg install pkg://solaris/x11/server/xvnc
+
+vncserver
+
+>svcs -a | grep vnc
+svcadm enable svc:/application/x11/xvnc-inetd:default
+
+
+vncserver -kill :1
+
+verificar o apontamento do repositorio
+
+PUBLISHER                   TYPE     STATUS P LOCATION
+solaris                     origin   online F http://10.223.4.63:10000/ ( SO 11.3  - CETAD)
+
+solaris                     origin   online F http://10.192.32.243:10000/ ( SO 11.2 - 511)
+
+
+##########################################################################
+Aumenta SWAP
+
+dd if=/dev/zero of=/swap/swapfile bs=1024 count=500000
+
+500000+0 records in
+500000+0 records out
+
+LVM
+
+mkswap /dev/mapper/VG_PRINCIPAL_LVSWAP
+
+Setting up swapspace version 1, size = 509595904 bytes
+
+ swapon /swap/swapfile 
+
+ ###################################################################
+ 
+  tar -cvzfE /backup/exp_oraprd1001.ddp.tar.gz exp_oraprd1001.ddp ( Flag E para aquivos grandes)
+
+  
+  
+###################################################################
+
+VERITAS
+
+comando:
+
+vxdg -g dg037 free
+
+xdisk listvx
+
+vxassist -g dg037 maxsize
+vvx 
+vxprint -g dg037 -htr | grep -i producao
+ 
+ 
+ vxassist -g dg1 -U gen make dv_syiprd07_gcsds_tm004 50G layout=striped stripeunit=128 ncolumn=3 alloc=vDTC270_01,vDTC270_02,vDTC270_03 user=30000201 group=30000201 mode=0660
+ 
+ vxassist -g dg1 maxsizev
+
+
+

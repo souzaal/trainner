@@ -1,0 +1,178 @@
+hostid
+
+ldm set-domain hostid=84f8736f cx0000ux2275
+
+CRIAR CONTROL DOMAIN
+
+ldm add-io pci@600 APPLPcx2062
+ldm remove-io pci@700 cx0000ux2156
+
+Create Services for Control Domain
+
+Virtual Console Concentrator service
+ldm add-vcc port-range=5000-5100 primary-vcc0 primary
+
+
+
+Virtual Switch service
+
+ldm add-vsw net-dev=net20 pvid=1 vid=700,900 dados-vsw0 primary 
+ldm add-vsw net-dev=net2 pvid=1 vid=101,150,159,160,161,162,200,201,203,204,205,206,210,511,553,603 primary-vsw0 primary
+ldm set-hostid 84f8736f cx0000ux2275 vid=143,1210,1211,1212,1213,1217,1218,1240,1280,1241,1610,1611,1612,1613,1618,1640,1641,1682,1410,1411,1413,1414,1417,1440,1441 apr-vsw0
+
+
+LISTAR SERVICOS
+ldm list-services primary
+shutdown -y -g0 -i6
+
+vCPU control domain.
+
+ldm set-vcpu 4 primary
+
+RAM control domain.
+
+ldm set-memory 8G primary
+
+Reconfigure primary domain
+
+ldm start-reconf primary
+
+Create Install Media Repository
+
+zfs create -p rpool2/ldoms/iso
+
+Virtual Disk Server service
+
+ldm add-vds primary-vds0 primary
+
+ldm add-vdsdev /export/install/sol-11_1-text-sparc.iso solaris11_1media@primary-vds0
+ldm add-vdsdev /export/install/solaris-10-8.11-sparc.iso solaris10_media@primary-vds0
+ldm add-vdsdev /export/install/SOL_10_113_SPARC.iso solaris10_13_media@primary-vds0
+ldm remove-vdsdev solaris10_media1@primary-vds0
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+LISTAR Logical Domains
+ldm list
+
+LISTAR CONFIGURAÇÕES
+ldm list-constraints APPLPcx2062
+
+Create the Logical Domain
+
+ldm add-domain APPLPcx2062
+
+Configure Devices
+
+ldm set-core 1 APPLPcx2062
+ldm set-memory 20G APPLPcx2062
+ldm add-vnet pvid=700 vnet0 apl-vsw0 APPLPcx2062
+
+ldm add-vnet vnet0 APPLPcx2062
+ldm set-vnet pvid=271 vnet0 APPLPcx2062
+ldm add-vnet vnet1 10.222.64.0_23 APPLPcx2062
+ldm set-vnet pvid=555 vnet1 APPLPcx2062
+
+Configurar Midia de Instalação
+
+ldm add-vdisk s10.iso solaris10_media@primary-vds0 APPLPcx2062
+ldm add-vdisk s11.iso solaris11_media@primary-vds0 APPLPcx2062
+ldm add-vdisk s11.iso solaris11_1media@primary-vds0 APPLPcx2062
+
+Criar discos SO
+zfs create -p -V 40G rpool/APPLPcx2062/rootdisk
+zfs create -p -V 60G rpool/APPLPcx2062/datadisk
+zfs create -p -V 20G rpool/APPLPcx2062/swapdisk
+
+ZFS volumes Virtual Disk Server service (primary-vds0).
+
+
+
+ldm add-vdsdev mpgroup=mo7366ux0029-vol1 /dev/dsk/c0t60000970000592600102533033374438d0s2 mo7366ux0029-vol1@primary-vds0
+ldm add-vdsdev mpgroup=mo7366ux0029-vol1 /dev/dsk/c0t60000970000592600102533033374438d0s2 mo7366ux0029-vol1@iodomain-vds0
+ldm add-vdisk mo7366ux0029-vol1 mo7366ux0029-vol1@primary-vds0 mo7366ux0029
+
+
+ldm add-vdsdev /dev/dsk/c0t60000970000592600102533033303239d0s2 APPLPcx2062_disk3E0F@primary-vds0
+ldm add-vdsdev /dev/zvol/dsk/rpool/APPLPcx2062/datadisk APPLPcx2062_datadisk@primary-vds0
+ldm add-vdsdev /dev/zvol/dsk/rpool/APPLPcx2062/swapdisk APPLPcx2062_swapdisk@primary-vds0
+
+
+Configure domain with disk storage device
+
+ldm add-vdisk disk0 APPLPcx2062_disk3E0F@primary-vds0 APPLPcx2062
+ldm add-vdisk datadisk APPLPcx2062_datadisk@primary-vds0 APPLPcx2062
+ldm add-vdisk swapdisk APPLPcx2062_swapdisk@primary-vds0 APPLPcx2062
+
+Configure Boot Devices
+
+ldm set-var auto-boot\?=false APPLPcx2062
+ldm set-var boot-device=disk0 APPLPcx2062
+
+Ligar dominio
+
+ldm bind-domain APPLPcx2062
+ldm start-domain APPLPcx2062
+
+Conectar ao dominio
+
+telnet localhost 5000
+
+{0} ok boot s10.iso
+
+./installcluster --apply-prereq --s10patchset
+./installcluster --s10patchset
+
+
+
+
+dladm create-vlan -l net0 -v 199 vnet199
+dladm show-link
+
+Setar IP
+ipadm create-ip vnet199
+ipadm create-addr -T static -a 10.192.238.154/24 vnet199/v4
+route -p add default 10.192.160.18
+ipadm show-addr
+
+
+root@cx0000ux2090:/# beadm list
+BE        Active Mountpoint Space  Policy Created          
+--        ------ ---------- -----  ------ -------          
+solaris   N      /          1.21M  static 2012-05-07 17:13 
+solaris-1 -      -          254.0K static 2013-03-05 10:34 
+solaris-2 R      -          10.75G static 2013-03-05 10:36 
+
+beadm rename beName newBeName
+beadm rename solaris-2 solaris
+
+
+
+telnet problema
+
+svc:/ldoms/vntsd:default
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+cxextrux401_disk0@primary-vds0
+cxextrux408_disk0@primary-vds0
+
+
+ldm add-vdsdev /dev/dsk/c20t500601613B202509d2s2 cxextrux401_disk0@primary-vds0
+ldm remove-vdsdev cxextrux408_disk0@primary-vds0
+
+/dev/dsk/c20t500601613B202509d2s2
+/dev/dsk/c20t500601613B202509d3s2
+/dev/dsk/c20t500601613B202509d4s2
+/dev/dsk/c20t500601613B202509d6s2
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+mpgroup
+ldm add-vdsdev /dev/dsk/c0t60000970000592600102533031354145d0s2 mpgroup=mo7366ux0001-vol0  mo7366ux0001-vol0@primary-vds0
+
+ldm add-vdsdev mpgroup=mo7366ux0060-vol0 /dev/dsk/c0t60000970000592600102533033353839d0s2 mo7366ux0060-vol0@primary-vds0
+ldm add-vdsdev mpgroup=mo7366ux0001-vol0 /dev/dsk/c0t60000970000592600102533031354145d0s2 mo7366ux0001-vol0@iodomain-vds0

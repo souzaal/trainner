@@ -1,0 +1,12 @@
+maquna VM ligada - 663 
+
+Maquina VM desligada -  124
+
+
+Maquina fisica Solaris: 21
+
+Maquna fisica linux: 9
+
+Maquina fisica Windows : 16
+
+Maquina fisica VM: 87 

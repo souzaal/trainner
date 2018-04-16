@@ -1,0 +1,53 @@
+
+    Once the repository image has been made available, whether by mounting
+    an image or copying the data to a specific location, it can be served to
+    clients using pkg.depotd(1M).  Before doing so, you will need to alter
+    the provided repository configuration template to match your environment.
+
+    First, configure pkg.depotd(1M) using SMF (where <data_source> is the
+    full path to where the 'repo' directory is located, such as '/mnt' or
+    <destination> from the examples in section 2.1):
+
+        svccfg -s application/pkg/server setprop \
+            pkg/inst_root=<data_source>
+        svccfg -s application/pkg/server setprop pkg/readonly=true
+
+    By default, pkg.depotd(1M) will listen for connections on port 80.  You
+    can change this by executing the following command:
+
+        svccfg -s application/pkg/server setprop pkg/port=<port_number>
+
+    You may also wish to review the man pages for pkg.depotd(1M) and pkgrepo(1)
+    for additional settings that may need to be changed based on your needs.
+
+    pkg.depotd(1M) can now be started and used for serving packages to pkg(5)
+    clients by refreshing the corresponding SMF service configuration and
+    enabling the service:
+
+        svcadm refresh application/pkg/server
+        svcadm enable application/pkg/server
+
+    To set clients to use only this depot server to retrieve package content
+    for the Oracle Solaris 11.2 release, execute the following command on each
+    client (where <origin> is the value you provided for 'pkg/inst_root' above):
+
+        pkg set-publisher -G '*' -g <origin> solaris
+
+    Alternatively, clients may be configured to use the depot server as a
+    mirror instead, allowing them to retrieve newer packages that may be
+    available while still accelerating operations for package content found
+    on your depot server (where <origin> is the value you provided for
+    'pkg/inst_root' above) or to increase aggregate resources available to
+    clients during packaging operations:
+
+        pkg set-publisher -m <origin> solaris
+
+    Please note that you should only use this depot as an origin or a mirror
+    on each system.
+
+3.  Further assistance
+
+    If you have a support plan with Oracle, please contact your service
+    representative.  Community discussion of this media product can be
+    found at:
+

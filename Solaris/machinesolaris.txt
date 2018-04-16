@@ -1,0 +1,3 @@
+doc machine solaris
+
+http://10.208.24.226/Servidores.html
