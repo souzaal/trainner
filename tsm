@@ -1,0 +1,221 @@
+192.168.118.79
+
+Usuário e senha
+
+comando:
+user: admin
+passwd: admin123
+
+Comando e servidores TSM
+
+1-	Logar no CX0000NT250.intra.caixa.gov.brCX0000NT250.intra.caixa.gov.br (Servidores 511N)
+
+2-	Logar no CX0000NT480.intra.caixa.gov.br (Servidores CETAD)
+
+DNGAPRESNT0023.intra.caixa.gov.br
+1
+
+3-	Logar no DNGAPRESNT0029.intra.caixa.gov.br (Servidores SAP/ERP)
+
+4-	Abrir o “Command Prompt” em modo administrador
+
+5-	Entradr no diretório: E:\Program Files\Tivoli\TSM\baclient
+
+6-	Executar o comando abaixo:
+
+
+dsmc backup vm "CXEXTRNT331"
+
+dsmc restore vm BBRNGGERNT0001 –vmname= BBRNGGERNT0001_restore
+
+
+dsmc backup vm "CD0000NT102" -optfile=dsm.CEPTIBR21_DM.1.opt
+
+Telnet 192.168.10.5 1500
+
+---------------------------------------------------------------------------------------
+BACKUP DIRETORIO
+
+dsmc incremental /backup/backup_permanente/Backup_Jboss_HMP_SD_316583 -subdir=yes
+
+Lista diretorio
+
+ dsmc q bac /backup/backup_permanente/Backup_Jboss_HMP_SD_316583/ -subdir=yes
+
+--------------------------------------------------------------------------------------
+Adicinar nodename
+
+
+[root@cx0000lx320 backup_permanente]# dsmadmc
+IBM Tivoli Storage Manager
+Command Line Administrative Interface - Version 7, Release 1, Level 6.0
+(c) Copyright by IBM Corporation and other(s) 1990, 2016. All Rights Reserved.
+
+Enter your user id:  admin
+
+Enter your password:
+
+ANS1051I Invalid password
+Enter your password:
+
+Session established with server TSMCTCSRV: Windows
+  Server Version 7, Release 1, Level 0.0
+  Server date/time: 11/25/2016 13:53:33  Last access: 11/25/2016 13:53:20
+
+
+tsm: TSMCTCSRV>q node cx000lx320
+ANR2034E QUERY NODE: No match found using this criteria.
+ANS8001I Return code 11.
+
+tsm: TSMCTCSRV>q node cx0000lx320
+ANR2034E QUERY NODE: No match found using this criteria.
+ANS8001I Return code 11.
+
+tsm: TSMCTCSRV>reg node cx0000lx320 cx0000lx320 dom=pd_fs
+
+_________________________________________________________________________________________________________________
+
+Configuraçãod de arquivo
+
+cat /opt/tivoli/tsm/client/ba/bin/dsm.sys
+
+
+ SErvername        pidfi2
+    COMMmethod        TCPip
+    TCPPort           1500
+    TCPServeraddress  192.19
+    Nodename          cx0000lx320
+    PASSWORDAccess    generate
+
+**** Logs *****
+
+    SCHEDLOGRETENTION  30 D
+    SCHEDLOGNAME       /opt/tivoli/tsm/client/ba/bin/dsmsched.log
+    ERRORLOGRETENTION  30 D
+    ERRORLOGNAME       /opt/tivoli/tsm/client/ba/bin/dsmerror.log
+
+***** Performance *****
+
+*    tcpwindow
+    largecommbuffers  yes
+    txnbytelimit      20000
+    tcpbuff           512
+
+
+-------------------------------------------------------------------------------------------------------------------
+dsmadmc
+
+
+
+
+OBS: Comando todo na mesma linha!!!
+
+dsmc q vm * | finstr NT175
+
+Como o backup é Incremental será executado rapidamente (Pode ser acompanhado nas Taks do VMware) e após a conclusão será apresentado um status geral do backup executado com a quantidade de backup com sucesso e quantidade com falhas. Geralmente é executado com sucesso, porém se ocorrer algum erro executar o comando novamente passando somente o nome das VMs com falha.
+
+Backup VM command complete
+Total number of virtual machines backed up successfully: 29
+  virtual machine CXEXTRNT367 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT358 backed up to nodename CEPTIBR21_DM
+  virtual machine BBRNGAPRNT0002 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT357 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT477 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT351 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT354 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT480 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT359 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT478 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT353 backed up to nodename CEPTIBR21_DM
+  virtual machine BBRNGAPRNT0001 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT355 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT350 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT479 backed up to nodename CEPTIBR21_DM
+  virtual machine BBRNGAPRNT0005 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT364 backed up to nodename CEPTIBR21_DM
+  virtual machine BBRNGAPRNT0003 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT481 backed up to nodename CEPTIBR21_DM
+  virtual machine BBRNGAPRNT0004 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT356 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT366 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT362 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT363 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT352 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT365 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT369 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT368 backed up to nodename CEPTIBR21_DM
+  virtual machine CXEXTRNT360 backed up to nodename CEPTIBR21_DM
+Total number of virtual machines failed: 1
+  virtual machine CXEXTRNT361
+Total number of virtual machines processed: 30
+
+#####################################################
+
+Lista servidores VM
+
+
+dsmc q vm *
+
+#######################################################
+
+- Comando para mover dados de fita para disco:
+
+MOVe NODEdata CEPTIBR21_DM FIlespace=\VMFULL-BBRNGGERNT0001 FROMstgpool=Tape_Fs2 TOstgpool=disk_vm MAXPRocess=5
+
+- Comando para verificar os processos que estão rodando:
+
+q pr
+
+- Comando para verificar se o processo terminou com sucesso ou falha:
+
+q act search='Process: 30'
+
+No 30 alterar para o número do processo que está em execução
+
+Verificar na saída do comando se deu erro ou sucesso:
+
+ANR0985I Process 29 for MOVE NODE DATA running in the
+BACKGROUND completed with completion state FAILURE at 17:26:04. (SESSION: 39241, PROCESS: 29)
+
+No lugar do FAILURE sera SUCCESS
+
+
+#######################################################
+
+
+
+[root@cx0000lx083 a745870]# dsmc
+IBM Tivoli Storage Manager
+Command Line Backup-Archive Client Interface
+  Client Version 7, Release 1, Level 6.0
+  Client date/time: 01/30/2017 08:22:50
+(c) Copyright by IBM Corporation and other(s) 1990, 2016. All Rights Reserved.
+
+Node Name: CX0000LX083
+ANS1353E Session rejected: Unknown or incorrect user ID entered
+
+
+Solução;
+
+Editar o arquivo dsm.opt / dsm.sys
+
+dms.opt___
+
+conf:
+SErvername       TSMCTCSRV
+
+
+------------------------------------
+
+dms.sys
+
+ SErvername        TSMCTCSRV
+    COMMmethod        TCPip
+    TCPPort           1500
+    TCPServeraddress  192.168.160.10
+    Nodename          cx0000lx083
+    PASSWORDAccess    generate
+
+
+
+
