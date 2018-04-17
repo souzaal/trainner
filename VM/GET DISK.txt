@@ -1,0 +1,108 @@
+Get-Datastore | Get-HardDisk -VM DGE7366LX0051 -DiskType RawPhysical,RawVirtual | Select Filename,CapacityKB, HDDeviceName, HDFileName 
+
+
+Get-VM | Get-View| Get-HardDisk -VM DGE7366LX0051  Select Filename,CapacityKB, HDDeviceName, HDFileName, RawPhysical, RawVirtual
+
+
+$report = @()$vms = Get-VM | Get-View
+foreach($vm in $vms){ 
+foreach($dev in $vm.Config.Hardware.Device){   
+if(($dev.gettype()).Name -eq "VirtualDisk"){     
+if($dev.Backing.CompatibilityMode -eq "physicalMode"){
+ $row = "" | select VMName, HDDeviceName, HDFileName
+ $row.VMName = $vm.Name
+ $row.HDDeviceName = $dev.Backing.DeviceName
+ $row.HDFileName = $dev.Backing.FileName
+ $report += $row
+ }   } }}$report
+
+
+## Get-HardDisk -VM name
+
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM | Get-HardDisk
+
+ Get-HardDisk -VM DGE7366LX0051 | Select Filename,CapacityKB, HDDeviceName, HDFileName, Disksiz
+einGB, Name
+
+
+# Lista todos os Disco VM #
+
+ Get-Vm DGE7366 LX0051 | Get-Harddisk | Format-List
+
+ 
+ # Lista MacAddress # 
+ 
+ Get-VM | Get-NetworkAdapter | Export-Csv C:\VMHostNetworkDetails.csv
+ 
+ Name                 Type       NetworkName  MacAddress         WakeOnLan
+                                                                  Enabled
+----                 ----       -----------  ----------         ---------
+Network adapter 1    Vmxnet3    DL380-DES... 00:50:56:8e:5b:43       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:40:de       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:0b:e2       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:73:c9       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:6a:0d       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:13:af       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:79:b5       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:61:8b       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:52:da       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:6e:72       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:76:f9       True
+Network adapter 1    Vmxnet3    DL380-DES... 00:50:56:8e:66:60       True
+
+######################################################################################
+
+Get-VMHostNetworkAdapter | select VMhost, Name, IP, SubnetMask, Mac, PortGroupName, vMotionEnabled, mtu, FullDuplex, BitRatePerSec | Export-Csv C:\VMHostNetworkDetails.csv
+
+VMHostNetworkAdapter | select VMhost, Name, IP, SubnetMask, Mac, PortGroupName | Export-Csv C:\VMHostNetworkDetails.csv
+
+
+VMHost         : sdedl980sh0007.corecaixa
+Name           : vmnic7
+IP             :
+SubnetMask     :
+Mac            : ac:16:2d:93:b3:0b
+PortGroupName  :
+vMotionEnabled :
+mtu            :
+FullDuplex     : False
+BitRatePerSec  : 0
+
+VMHost         : sdedl980sh0007.corecaixa
+Name           : vmnic8
+IP             :
+SubnetMask     :
+Mac            : ac:16:2d:93:ad:d0
+PortGroupName  :
+vMotionEnabled :
+mtu            :
+FullDuplex     : False
+BitRatePerSec  : 0
+
+VMHost         : sdedl980sh0007.corecaixa
+Name           : vmnic9
+IP             :
+SubnetMask     :
+Mac            : ac:16:2d:93:ad:d1
+PortGroupName  :
+vMotionEnabled :
+mtu            :
+FullDuplex     : False
+BitRatePerSec  : 0
+
+VMHost         : sdedl980sh0007.corecaixa
+Name           : vmk0
+IP             : 10.116.76.16
+SubnetMask     : 255.255.254.0
+Mac            : 80:c1:6e:74:81:28
+PortGroupName  : ADM-ESX_10.116.76.1
+VMotionEnabled : False
+Mtu            : 1500
+FullDuplex     :
+BitRatePerSec  :
+
+##############################################
+
+Busca Snapshot
+
+

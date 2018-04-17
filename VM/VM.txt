@@ -1,0 +1,244 @@
+
+Connect-VIServer -Server cx0000nt230.intra.caixa.gov.br -User a745870 -Password XXXX
+
+
+
+Get-Cluster 7259CLUERP001 | Get-VMHost | Get-VMHostHba -type FibreChannel | select VMHost,Device,@{N="WWN";E={"{0:X}" -f $_.PortWorldWideName}} | sort VHHost,Device
+
+ 
+  
+VMHost                     Device                     WWN
+------                     ------                     ---
+dge7259sh0002.intra.cai... vmhba10                    1000A0481CE3DCA1
+dge7259sh0001.intra.cai... vmhba10                    1000A0481CE35D41
+dge7259sh0001.intra.cai... vmhba11                    1000A0481CE35D45
+dge7259sh0002.intra.cai... vmhba11                    1000A0481CE3DCA5
+dge7259sh0001.intra.cai... vmhba12                    1000A0481CE30D71
+dge7259sh0002.intra.cai... vmhba12                    1000A0481CE3DCF1
+dge7259sh0002.intra.cai... vmhba13                    1000A0481CE3DCF5
+dge7259sh0001.intra.cai... vmhba13                    1000A0481CE30D75
+dge7259sh0002.intra.cai... vmhba2                     1000A0481CE3DCC1
+dge7259sh0001.intra.cai... vmhba2                     1000A0481CE30D89
+dge7259sh0002.intra.cai... vmhba3                     1000A0481CE3DCC5
+dge7259sh0001.intra.cai... vmhba3                     1000A0481CE30D8D
+dge7259sh0002.intra.cai... vmhba4                     10000090FA6257A4
+dge7259sh0001.intra.cai... vmhba4                     10000000C9F474D0
+dge7259sh0002.intra.cai... vmhba5                     10000090FA6257A5
+dge7259sh0001.intra.cai... vmhba5                     10000000C9F474D1
+dge7259sh0001.intra.cai... vmhba6                     10000090FA625758
+dge7259sh0002.intra.cai... vmhba6                     10000090FA625606
+dge7259sh0001.intra.cai... vmhba7                     10000090FA625759
+dge7259sh0002.intra.cai... vmhba7                     10000090FA625607
+dge7259sh0001.intra.cai... vmhba8                     10000090FA625812
+dge7259sh0002.intra.cai... vmhba8                     10000090FA625972
+dge7259sh0001.intra.cai... vmhba9                     10000090FA625813
+dge7259sh0002.intra.cai... vmhba9                     10000090FA625973
+####################################################################################
+
+Reinicia serviço SH
+
+‘services.sh restart’ 
+
+#####################################################################################
+Disco 
+
+##Lista de disco##
+
+Get-Vm cxextrlx136 | Get-Harddisk | Format-List
+
+Get-VM | Get-View| Get-HardDisk -VM cxextrlx136 Select Filename,CapacityKB, HDDeviceName, HDFileName, RawPhysical, RawVirtual
+
+Get-HardDisk -VM name
+
+###################################################################################
+
+Senha Gerencia
+
+user:cepti
+
+Passwd: ceptibrcef
+
+link: https://mo7259sh0018.gerencia.intra.caixa.gov.br/
+
+##################################################################################
+
+Get-VM | Select Name, NumCPU, MemoryMB, ProvisionedSpaceGB, UsedSpaceGB, @{N=”ESX Host”;E={Get-VMHost -VM $_}}, @{N=”Datastore”;E={Get-Datastore -VM $_}}, @{N=”Guest OS”;E={Get-VMGuest -VM $_}},@{N=”WWPN”;E={Get-VMHostHba -VM $_}} | export-csv C:\vmhostInfoByVM.csv
+
+
+
+PS C:\temp> Get-VM | Format-List name, powerstate, numcpu, memorygb, provisioned,spacegb, usedspacegb,notes,version,wwnp,vmhost | Out-File c:/mv.txt
+#############################################################
+
+PS C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI> Get-VM | Format-List name, powerstate, numcpu, memorygb, provisioned, usedspacegb, notes, version | Get-Cluster 7259CLUPRD003 | Get-VMHost | Get-VMHostHba -type Fibre Channel | select VMHost,Device,@{N="WWN";E={"{0:X}" -f $_.PortWorldWideName}} |
+sort VHHost,Device | Out-File c:/temp/mv7.txt
+
+##############################################################
+
+Get-VM $vm | Select Name, NumCPU, MemoryMB, ProvisionedSpaceGB, UsedSpaceGB, @{N=”ESX Host”;E={Get-VMHost -VM $_}}, @
+{N=”7259CLUPRD003”;E={Get-Datastore -VM $_}}, @{N=”Guest OS”;E={Get-VMGuest -VM $_}},@{N="WWN";E={[string]::Join(',',(Get-V
+MHost VM $_ ) <<<< | Get-VMHostHba -Type Fibrechannel | %{"{0:X}" -f $_.PortWorldWideName})}} | export-csv c:\Temp\VMTEST.txt
+
+
+#################################################################
+
+Get-Cluster 7259CLUPRD003 | Get-VMHost | Get-VMHostHba -type Fibre Channel | select VMHost,Device,@{N="WWN";E={"{0:X}" -f $_.PortWorldWideName}} | sort VHHost,Device | Out-File C:/temp/wwn.txt
+
+#################################################################
+
+$report = @()
+$vms = Get-VM | Get-View
+foreach($vm in $vms){
+     foreach($dev in $vm.Config.Hardware.Device){
+          if(($dev.gettype()).Name -eq "VirtualDisk"){
+               if(($dev.Backing.CompatibilityMode -eq "physicalMode") -or
+               ($dev.Backing.CompatibilityMode -eq "virtualMode")){
+                    $row = "" | select VMName, VMHost, HDDeviceName, HDFileName, HDMode, HDsize, HDDisplayName
+                    $row.VMName = $vm.Name
+                    $esx = Get-View $vm.Runtime.Host
+                    $row.VMHost = ($esx).Name
+                    $row.HDDeviceName = $dev.Backing.DeviceName
+                    $row.HDFileName = $dev.Backing.FileName
+                    $row.HDMode = $dev.Backing.CompatibilityMode
+                    $row.HDSize = $dev.CapacityInKB
+                    $row.HDDisplayName = ($esx.Config.StorageDevice.ScsiLun | where {$_.Uuid -eq $dev.Backing.LunUuid}).DisplayName
+                    $report += $row
+               }
+          }
+     }
+}
+$report
+
+###########################################################
+
+WWN
+
+Get-cluster 7259CLUPRD003  | GET-VM | Get-VMhost | Get-VMHostHBA -Type FibreChannel | Select VMHost,Device,Name, NumCPU, MemoryMB, ProvisionedSpaceGB, UsedSpaceGB,@{N="WWN";E={"{0:X}"-f$_.PortWorldWideName}} | Sort VMhost,Device,Name|select VMName, VMHost, HDDeviceName, HDFileName, HDMode, HDsize, HDDisplayName 
+
+
+#############################################################
+
+Get-Datastore | Get-HardDisk -VM DGE7366LX0051 -DiskType RawPhysical,RawVirtual | Select Filename,CapacityKB, HDDeviceName, HDFileName 
+
+
+Get-VM | Get-View| Get-HardDisk -VM DGE7366LX0051  Select Filename,CapacityKB, HDDeviceName, HDFileName, RawPhysical, RawVirtual
+
+
+$report = @()$vms = Get-VM | Get-View
+foreach($vm in $vms){ 
+foreach($dev in $vm.Config.Hardware.Device){   
+if(($dev.gettype()).Name -eq "VirtualDisk"){     
+if($dev.Backing.CompatibilityMode -eq "physicalMode"){
+ $row = "" | select VMName, HDDeviceName, HDFileName
+ $row.VMName = $vm.Name
+ $row.HDDeviceName = $dev.Backing.DeviceName
+ $row.HDFileName = $dev.Backing.FileName
+ $report += $row
+ }   } }}$report
+
+
+## Get-HardDisk -VM name
+
+
+
+ Get-HardDisk -VM DGE7366LX0051 | Select Filename,CapacityKB, HDDeviceName, HDFileName, Disksiz
+einGB, Name
+
+
+# Lista todos os Disco VM #
+
+ Get-Vm DGE7366 LX0051 | Get-Harddisk | Format-List
+
+ 
+ # Lista MacAddress # 
+ 
+ Get-VM | Get-NetworkAdapter | Export-Csv C:\VMHostNetworkDetails.csv
+ 
+ Name                 Type       NetworkName  MacAddress         WakeOnLan
+                                                                  Enabled
+----                 ----       -----------  ----------         ---------
+Network adapter 1    Vmxnet3    DL380-DES... 00:50:56:8e:5b:43       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:40:de       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:0b:e2       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:73:c9       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:6a:0d       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:13:af       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:79:b5       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:61:8b       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:52:da       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:6e:72       True
+Network adapter 1    Vmxnet3    DL980-TQS... 00:50:56:8e:76:f9       True
+Network adapter 1    Vmxnet3    DL380-DES... 00:50:56:8e:66:60       True
+
+######################################################################################
+
+Get-VMHostNetworkAdapter | select VMhost, Name, IP, SubnetMask, Mac, PortGroupName, vMotionEnabled, mtu, FullDuplex, BitRatePerSec | Export-Csv C:\VMHostNetworkDetails.csv
+
+VMHostNetworkAdapter | select VMhost, Name, IP, SubnetMask, Mac, PortGroupName | Export-Csv C:\VMHostNetworkDetails.csv
+
+
+VMHost         : sdedl980sh0007.corecaixa
+Name           : vmnic7
+IP             :
+SubnetMask     :
+Mac            : ac:16:2d:93:b3:0b
+PortGroupName  :
+vMotionEnabled :
+mtu            :
+FullDuplex     : False
+BitRatePerSec  : 0
+
+VMHost         : sdedl980sh0007.corecaixa
+Name           : vmnic8
+IP             :
+SubnetMask     :
+Mac            : ac:16:2d:93:ad:d0
+PortGroupName  :
+vMotionEnabled :
+mtu            :
+FullDuplex     : False
+BitRatePerSec  : 0
+
+VMHost         : sdedl980sh0007.corecaixa
+Name           : vmnic9
+IP             :
+SubnetMask     :
+Mac            : ac:16:2d:93:ad:d1
+PortGroupName  :
+vMotionEnabled :
+mtu            :
+FullDuplex     : False
+BitRatePerSec  : 0
+
+VMHost         : sdedl980sh0007.corecaixa
+Name           : vmk0
+IP             : 10.116.76.16
+SubnetMask     : 255.255.254.0
+Mac            : 80:c1:6e:74:81:28
+PortGroupName  : ADM-ESX_10.116.76.1
+VMotionEnabled : False
+Mtu            : 1500
+FullDuplex     :
+BitRatePerSec  :
+
+
+
+Get-VM cxextrlx136 | Get-ScsiController
+
+
+$disk = Get-VM cxextrlx136 | Get-HardDisk | Select -First 2
+
+Get-ScsiController -HardDisk $disk
+
+
+MIGRATE 
+
+Get-VM VM1 | Move-VM -Datastore DS2
+
+
+myDatastoreCluster1 = Get-DatastoreCluster -Name 'MyDatastoreCluster1' $myVm2 = Get-VM -Name 'MyVM2'
+
+TEMP_MIGRA = DatastoreCluster -Name 'TEM_MIGRA' $myVm2 = Get-VM -Name 'cx0000lxlab01'
+
+
+
+

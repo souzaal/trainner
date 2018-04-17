@@ -1,0 +1,16 @@
+
+
+
+
+À
+HITTS>CEPTIBR>Suporte Baixa
+
+1- Validar a inicialização dos serviços VMware após término dos updates:
+VMware VirtualCenter Server
+VMware vSphere Profile-Driven Storage Service
+VMware Syslog Collector
+VMware vSphere Web Client
+VMwareVCMSDS
+VMware vCenter Inventory Service
+
+Testar acesso ao mesmo através do client.

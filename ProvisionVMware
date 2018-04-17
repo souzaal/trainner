@@ -1,0 +1,34 @@
+---
+- hosts: 127.0.0.1
+  tasks:
+    - name: configure VM
+      vmware_guest:
+        hostname: "{{ vcenterdht.caixa }}"
+        username: "{{ corpcaixa\p745870 }}"
+        password: "{{ 48RKcpUf }}"
+        validate_certs: false
+        datacenter: "CEF"
+        resource_pool: RP_AGIL
+        folder: "{{ /CEPTIBR/Linux }}"
+        name: "{{ MyVm2 }}"
+        state: poweredon
+        guest_id: rhel7
+        disk:
+        - size_gb: 50
+          type: thin
+          datastore: "{{ BR-DL980-VMAX86_06 }}"
+        hardware:
+          memory_mb: 4096
+          num_cpus: 2
+          scsi: paravirtual
+        networks:
+        - name: "{{ DL980-DES-APR_10.116.182.0/23-VLAN2619 }}"
+          ip: "{{ 10.116.182.22 }}"
+          netmask:  "{{ 255.255.254.0 }}"
+          gateway: "{{ 10.116.182.1 }}"
+          domain: "{{ intra.caixa.gov.br }}"
+          dns_server:
+          - 10.192.32.50
+          - 10.192.32.51
+        template: "{{ RHEL7 }}"
+        wait_for_ip_address: no

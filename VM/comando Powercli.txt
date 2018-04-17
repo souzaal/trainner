@@ -1,0 +1,108 @@
+
+Alterar o tipo de rede
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184 | Get-NetworkAdapter
+ | Set-NetworkAdapter -Type Vmxnet3
+
+Desligar VM's:
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184 | Shutdown-VMGuest
+
+Habilitar o hotadd:
+
+$VM = Get-VM CXEXTRLX184
+$spec = New-Object VMware.Vim.VirtualMachineConfigSpec
+$spec.memoryHotAddEnabled = $true
+$spec.cpuHotAddEnabled = $true
+$VM.ExtensionData.ReconfigVM_Task($spec)
+
+Setar memoria:
+
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184 | Set-VM -MemoryGB 8
+
+Realizar snapshot
+
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184,CXEXTRLX185 | new-snapshot -name NOMEDOSNAP
+
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX321_CLONE | new-snapshot -name CXEXTRLX321_bkp
+
+
+Iniciar VM
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184| start-VM
+
+
+Verificar IP:
+Get-VM | Select Name, @{N="IP Address";E={@($_.guest.IPAddress[0])}}
+
+
+Verificar versão Vmware Tools:
+
+get-vm VMNAME| select name, ToolsVersion | sort ToolsVersion
+
+Verificar CPU/Memoria HotAdd:
+
+Get-VM | Get-View | Select Name, ` @{N="CpuHotAddEnabled";E={$_.Config.CpuHotAddEnabled}}, ` @{N="CpuHotRemoveEnabled";E={$_.Config.CpuHotRemoveEnabled}}, ` @{N="MemoryHotAddEnabled";E={$_.Config.MemoryHotAddEnabled}}
+
+Realiza Snapshot:
+
+New-Snapshot -VM CXEXTRNT065 -Name ATVAtualizacao
+
+Instalar Vmware Tools:
+Update-Tools VMNAME
+
+
+#####################
+
+Comando coletar informações 
+
+vm-support
+
+
+Creating /var/tmp/esx-cx0000sh145-2016-09-14--21.39.tgz
+
+
+
+Report 
+
+Get-Cluster | Get-VM | Select Name, Host, MemoryGB, CustomFields, @{N="IP Address";E={@($_.guest.IPAddress[0])}}
+
+
+Get-VM CXEXTRUX219,CXEXTRUX220,CXEXTRUX225,CXEXTRUX290
+
+
+
+511 
+
+
+Get-VM CXEXTRLX151,CXEXTRNT145,CXEXTRNT170,CXEXTRLX165,CXEXTRLX348,CXEXTRLX467,CXEXTRLX466,CXEXTRUX204,CXEXTRUX179,CXEXTRUX203,CXEXTRUX358,CXEXTRUX178,CXEXTRUX200,CXEXTRLX150,CXEXTRUX012,CXEXTRUX218,CXEXTRLX054,CXEXTRUX381,CXEXTRUX380,CXEXTRUX357,CXEXTRUX124,CXEXTRLX041,CXEXTRLX269,CXEXTRLX193,CXEXTRLX194,CXEXTRLX195,CXEXTRNT213
+
+
+Stop-VM CXEXTRLX348
+
+
+Remove=VM CXEXTRLX151
+Remove=VM CXEXTRNT145
+Remove=VM CXEXTRNT170
+Remove=VM CXEXTRLX165
+Remove=VM CXEXTRLX348
+Remove=VM CXEXTRLX467
+Remove=VM CXEXTRLX466
+Remove=VM CXEXTRUX204
+Remove=VM CXEXTRUX179
+Remove=VM CXEXTRUX203
+Remove=VM CXEXTRUX358
+Remove=VM CXEXTRUX178
+Remove=VM CXEXTRUX200
+Remove=VM CXEXTRLX150
+Remove=VM CXEXTRUX012
+Remove=VM CXEXTRUX218
+Remove=VM CXEXTRLX054
+Remove=VM CXEXTRUX381
+Remove=VM CXEXTRUX380
+Remove=VM CXEXTRUX357
+Remove=VM CXEXTRUX124
+Remove=VM CXEXTRLX041
+Remove=VM CXEXTRLX269
+Remove=VM CXEXTRLX193
+Remove=VM CXEXTRLX194
+Remove=VM CXEXTRLX195
+Remove=VM CXEXTRNT213
+

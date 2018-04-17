@@ -1,0 +1,28 @@
+
+Unidade de Vinculação : 	7259-CEPTI
+Unidade de Atendimento * : 	7259-CEPTI/BR
+Tipo do Serviço * : 	Configuração de softwares em Servidor
+Nome do Software* : 	ESX
+Parâmetros* : 	configuração de rede
+Nome do Servidor* : 	CBRNGGERSH0001
+Objetivo Esperado* : 	Conexão com o servidor CBRNGGERSH0001
+Item de Configuração : 	CBRNGGERSH0001
+Data e Hora de execução da Requisição* : 	15/4/2016 19:00
+Descrição: 	à Hitss,
+
+1    Solicitamos verificar se a rede 10.122.150.30/23 está configurada na interface correta para acesso do vcenter client ao servidor CBRNGGERSH0001.
+
+2    Seguem topologia e mapa de manobras.
+
+3    As regras da mudança 135453.
+
+80/443/902/5988/5989/808/8443 
+623/903/902
+
+
+att,
+BRCSPB
+Impacto * : 	Não
+
+
+10.122.150.201
