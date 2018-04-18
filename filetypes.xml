@@ -8,6 +8,7 @@
       <mapping pattern="Linux" type="PLAIN_TEXT" />
       <mapping pattern="tsm" type="PLAIN_TEXT" />
       <mapping pattern="tste" type="YAML" />
+      <mapping pattern="ngnix" type="YAML" />
       <mapping pattern="servers" type="YAML" />
       <mapping pattern="Users" type="YAML" />
       <mapping pattern="ProvisionVMware" type="YAML" />
