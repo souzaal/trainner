@@ -1,0 +1,99 @@
+nsible -i ./dev --list-hosts all
+  642  05/03/18 20:05:55 -> ansible -i ./dev --list-hosts all
+  643  05/03/18 20:06:47 -> ansible -i ./dev -m ping all
+  645  05/03/18 20:09:13 -> ansible -i ./dev -m ping all
+  647  05/03/18 20:11:16 -> ansible -i ./dev -m ping all
+  649  05/03/18 20:11:47 -> ansible -i ./dev -m ping all
+  651  05/03/18 20:12:06 -> ansible -i ./dev -m ping all
+  652  05/03/18 20:58:17 -> ansible -i ./dev -m ping 10.192*
+  654  05/03/18 21:13:57 -> ansible -i ./dev -m ping command -a "hostname"
+  655  05/03/18 21:14:06 -> ansible -i ./dev -m ping command -a "hostname" all
+  656  05/03/18 21:14:36 -> ansible -i ./dev -m ping -m command -a "hostname" all
+  657  05/03/18 21:18:27 -> ansible -i ./dev -m ping -m command -a "ip a" all
+  658  05/03/18 21:18:40 -> ansible -i ./dev -m ping -m command -a "cat /etc/hosts" all
+  662  05/03/18 21:22:57 -> ansible-playbook ./hostname.yml
+  663  05/03/18 21:23:09 -> ansible-playbook -i ./hostname.yml
+  664  05/03/18 21:23:51 -> ansible-playbook -i /etc/ansible/playbooks/hostname.yml
+  665  05/03/18 21:24:17 -> ansible-playbook ./hostname.yml
+  669  05/03/18 21:25:40 -> ansible-playbook ./hostname.yml
+  670  05/03/18 21:25:51 -> ansible -i ./dev -m ping -m command -a "cat /etc/hosts" all
+  672  05/03/18 21:26:02 -> ansible-playbook ./hostname.yml
+  682  05/03/18 21:27:45 -> ansible-playbook ./hostname.yml
+  685  05/03/18 22:25:35 -> ansible-playbook ./hostname.yml
+  687  05/03/18 22:26:45 -> ansible-playbook -i /etc/ansible/dev ./hostname.yml
+  689  05/03/18 22:28:16 -> ansible-playbook -i /etc/ansible/dev ./hostname.yml
+  691  05/03/18 22:29:26 -> ansible-playbook -i /etc/ansible/dev ./hostname.yml
+  693  05/03/18 22:29:45 -> ansible-playbook -i /etc/ansible/dev ./hostname.yml
+  695  05/03/18 22:31:46 -> ansible-playbook -i /etc/ansible/dev ./hostname.yml
+  696  06/03/18 17:47:41 -> cd /etc/ansible/playbooks/
+  697  06/03/18 17:47:43 -> ansible-playbook -i /etc/ansible/dev ./hostname.yml
+  699  06/03/18 18:39:22 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  701  06/03/18 18:40:45 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  703  06/03/18 18:41:26 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  705  06/03/18 18:41:42 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  711  06/03/18 18:42:52 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  713  06/03/18 22:12:42 -> cd /etc/ansible/playbooks/
+  716  06/03/18 22:13:30 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  718  06/03/18 22:14:46 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  721  06/03/18 22:16:01 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  724  06/03/18 22:17:51 -> cd ansible.cfg
+  725  06/03/18 22:17:54 -> vi ansible.cfg
+  727  07/03/18 15:10:27 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  728  07/03/18 15:10:38 -> cd /etc/ansible/playbooks/
+  729  07/03/18 15:10:39 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  740  07/03/18 15:20:10 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  747  07/03/18 15:25:41 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  749  07/03/18 15:25:51 -> ansible-playbook -i /etc/ansible/dev ./webservers.yaml
+  756  07/03/18 16:10:43 -> cd /etc/ansible/playbooks/
+  812  07/03/18 22:09:39 -> cd /etc/ansible/playbooks/
+  816  07/03/18 22:21:33 -> ansible-playbook -i /etc/ansible/dev ./server.yaml.yaml
+  817  07/03/18 22:21:38 -> ansible-playbook -i /etc/ansible/dev ./server.yaml
+  820  07/03/18 22:22:36 -> ansible-playbook -i /etc/ansible/dev ./server.yaml
+  822  07/03/18 22:22:43 -> ansible-playbook -i /etc/ansible/dev ./server.yaml
+  826  07/03/18 22:24:25 -> ansible-playbook -i /etc/ansible/dev ./server.yaml
+  829  07/03/18 22:24:56 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  831  07/03/18 22:28:55 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  833  07/03/18 22:34:07 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  840  07/03/18 22:35:02 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  842  07/03/18 22:35:57 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  844  07/03/18 22:37:24 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  846  07/03/18 22:38:29 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  848  07/03/18 22:39:20 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  850  07/03/18 22:40:25 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  874  09/03/18 16:16:17 -> cd /etc/ansible/
+  875  09/03/18 16:16:30 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  876  09/03/18 16:36:17 -> cat /etc/ansible/playbooks/server.yaml
+  877  09/03/18 22:24:24 -> cd /etc/ansible/
+  883  09/03/18 22:28:12 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  885  09/03/18 22:32:17 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  889  09/03/18 22:36:36 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/webservers.yaml
+  891  09/03/18 22:36:57 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/webservers.yaml
+  894  09/03/18 22:42:04 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/webservers.yaml
+  895  09/03/18 22:42:54 -> cat /etc/ansible/playbooks/server.yaml
+  896  09/03/18 22:42:57 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/webservers.yaml
+  919  09/03/18 22:55:06 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/webservers.yaml
+  927  09/03/18 22:57:44 -> cd /etc/ansible/playbooks/
+  930  09/03/18 22:58:46 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  932  09/03/18 23:00:24 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  933  12/03/18 15:46:58 -> ansible-playbook -i /etc/ansible/playbooks/server.yaml
+  934  12/03/18 15:47:09 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  935  12/03/18 15:47:45 -> cd /etc/ansible/
+  941  12/03/18 16:10:22 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  943  12/03/18 16:11:44 -> cd /etc/ansible/demo/app
+  945  12/03/18 16:11:52 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  951  12/03/18 16:14:47 -> cat /etc/ansible/playbooks/server.yaml
+  952  12/03/18 16:16:45 -> ansible.plabook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  953  12/03/18 16:17:00 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  954  12/03/18 16:17:52 -> vi /etc/ansible/playbooks/server.yaml
+  955  12/03/18 16:17:58 -> vim /etc/ansible/playbooks/server.yaml
+  956  12/03/18 16:19:56 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  957  12/03/18 16:21:41 -> vi /etc/ansible/playbooks/server.yaml
+  958  12/03/18 16:25:24 -> vim /etc/ansible/playbooks/server.yaml
+  959  12/03/18 16:29:36 -> ansible-playbook -i /etc/ansible/dev /etc/ansible/playbooks/server.yaml
+  961  12/03/18 16:30:32 -> vim /etc/ansible/playbooks/server.yaml
+  962  12/03/18 17:05:31 -> vim /etc/ansible/playbooks/webservers.yaml
+  963  12/03/18 17:05:43 -> vim /etc/ansible/playbooks/webservers.yml
+  965  12/03/18 17:05:58 -> cd /etc/ansible/playbooks/
+  969  12/03/18 17:16:47 -> history | grep ansible
+[root@cx0000lxlab002 playbooks]# vi server.yaml
+[root@cx0000lxlab002 playbooks]#

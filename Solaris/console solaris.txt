@@ -1,0 +1,10 @@
+cx0000ux034:/# su - sms-svc  ( Acessa console )
+
+cx0000ux034:sms-svc:1> reset -d b  ( Reinicia maquina fisica)
+
+cx0000ux034:sms-svc:3> showplatform -p domains ( Exibir maquina)
+
+cx0000ux034:sms-svc:4> console -d b (console domain)
+
+
+===========================================================

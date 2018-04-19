@@ -1,0 +1,334 @@
+		
+maquina LAB
+
+cx0000ux897
+
+10.192.127.23
+
+cepit20SUP
+
+10.208.24.99
+
+##############################################################
+
+links Oracle:
+
+http://docs.oracle.com/cd/E56346_01/html/E53706/glilb.html#scrolltoc
+
+
+
+
+##############################################################
+
+export TERM=xterm
+
+cx0000uxlab
+
+################################################################
+domain  corecaixa
+search  corecaixa
+nameserver      10.192.32.50
+nameserver      10.192.32.51
+nameserver      10:.192.32.9
+
+ cat /etc/ssh/sshd_config | grep LookupClientHostnames
+
+################################################################
+Gerando chave para acesso
+ssh-keygen -p     #troca a frase
+ssh-keygen -t rsa #gera a chave
+scp -p id_rsa.pub 10.252.176.52:.ssh/authorized_keys
+#################################################################
+
+https://support.oracle.com
+
+abaixa pacotes
+
+Usuário: ceptibr20@caixa.gov.br
+Pass reropBR20
+
+#################################################################
+repositorio instalares aplicativos
+
+10.208.24.99
+user: root
+senha: cap123sun
+
+#################################################################
+Single_user
+
+
+Enter user name for system maintenance (control-d to bypass): root
+
+Enter root password (control-d to bypass): solaris
+
+single-user privilege assigned to root on /dev/console.
+Entering System Maintenance Mode
+
+#################################################################
+
+Criação IPMP Solaris 11
+
+ipadm delete-ip net0
+
+ipadm create-ip net0
+ipadm create-ip net1
+ipadm create-ipmp -i net0 -i net1 ipmp0
+ipadm set-ifprop -p standby=on -m ip net1
+ipadm create-addr -T static -a 10.192.127.23/24 ipmp0
+ipadm
+route -p add default 10.192.127.1 -ifp ipmp0
+svccfg -s svc:/network/ipmp setprop config/transitive-probi
+svcadm refresh svc:/network/ipmp:default
+ipmpstat -g
+ipmpstat -a
+ipmpstat -t
+
+criar arquivo no diretorio /etc
+vi hostname.net0
+
+adiciona a linha abaixo
+
+/etc/hostname.net0
+net0 netmask + broadcast + group ipmp0 deprecated -failover up
+addif serv netmask + broadcast + failover up
+
+/etc/hostname.net1
+net1 netmask + broadcast + group ipmp0 deprecated -failover standby up
+ 
+
+#############################################################
+nodename
+
+svccfg -s system/identity:node setprop config/nodename="cx0000uxlab"
+svccfg -s system/identity:node setprop config/loopback="cx0000uxlab"
+svccfg -s system/identity:node refresh
+
+
+##############################################################
+
+DNS
+
+svccfg -s network/dns/client setprop config/nameserver = net_address: "(10.252.32.50 10.252.32.51 10.192.32.50)"          
+
+svccfg -s network/dns/client setprop config/domain = astring: "corecaixa"  
+
+svccfg -s network/dns/client setprop config/search = astring: "corecaixa"  
+nscfg export network/dns/client
+
+svcadm refresh svc:/network/dns/client:default
+
+svcadm refresh name-service/switch
+
+##############################################################
+
+ssh
+
+sed 's/PermitRootLogin\ no/PermitRootLogin\ yes/g' /etc/ssh/sshd_config > /tmp/sshd_config ; mv /tmp/sshd_config /etc/ssh/sshd_config
+svcadm restart ssh
+svcadm enable ssh
+
+##############################################################
+
+DELETA INTERFACE e IPMP
+
+ipadm delete-ip net0
+
+ipadm delete-ipmp ipmp0
+
+#############################################################
+
+
+*Exibir snapshot*
+
+zfs list -t snapshot
+zfs list -r -t snapshot -o name,creation tank/home 
+zfs list -o space
+
+
+*Deleta snapahot*
+
+ zfs destroy -r 
+
+*MountPoint* 
+
+zfs create -o mountpoint=/opt rpool/opt/oracle
+
+*Adiciona disco zfs*
+
+ zpool create rdados c1d2
+
+#############################################################
+
+Verificiar memoria e processamento
+
+prstat -a
+
+vmstat 
+
+#############################################################
+
+habilita interface
+
+ipadm enable-if -t net1
+
+
+##############################################################Zpool
+
+zpool status rpool
+
+remove mirror
+
+zpool detach rpool c1d2
+
+adiciona mirror 
+
+zpool attach rpool c1d2
+
+zpool get all -icvrdados - Verificar Conf. 
+
+##############################################################
+*ZONE*
+
+Instalar zone 
+
+zoneadm -z grandmazone uninstall
+ 
+zoneadm -z grandmazone install -c /opt/ora/data/gmconf.xml/sc_profile.xml
+
+Configuração de interface zone
+
+dladm help set-linkprop -t -p zone grandmazone net2
+
+*ZONECFG*
+
+
+
+
+
+##############################################################
+
+Verificar DISCO
+
+prtconf -vp | grep bootpath
+
+
+
+##############################################################
+*Send Receive
+
+#FULL
+
+zfs set compression=on rpool
+
+zfs snapshot -r rpool@rpool.snap1
+
+zfs send rpool@rpool.snap1 | zfs receive -F rdados@rpool.snap1
+
+zfs send rpool/filesystem@rpool.snap1 | zfs receive -F 
+rdados/cx0000uxlab@rpool.snap1 
+
+zfs send zprisco/cx0000ux1046/opt@snap1 | zfs receive -F 
+
+zprisco_new/cx0000ux1046/opt@snap1 &
+
+
+_______________________________________________________________________
+http://docs.oracle.com/cd/E18752_01/html/817-1592/gentextid-12492.html#gcglo
+
+
+##############################################################
+
+Boot BEADM Ldom 
+
+ ok boot -L
+Boot device: /virtual-devices@100/channel-devices@200/disk@0:a  File and args: -L
+1 solaris-bkp
+Select environment to boot: [ 1 - 1 ]: 1
+
+To boot the selected entry, invoke:
+boot [<root-device>] -Z rpool/ROOT/solaris-bkp
+
+Program terminated
+{0} ok boot -Z rpool/ROOT/solaris-2
+NOTICE: Entering OpenBoot.
+NOTICE: Fetching Guest MD from HV.
+NOTICE: Starting additional cpus.
+NOTICE: Initializing LDC services.
+NOTICE: Probing PCI devices.
+NOTICE: Finished PCI probing.
+
+SPARC T4-4, No Keyboard
+Copyright (c) 1998, 2015, Oracle and/or its affiliates. All rights reserved.
+OpenBoot 4.37.2, 4.0000 GB memory available, Serial #83378204.
+Ethernet address 0:14:4f:f8:40:1c, Host ID: 84f8401c.
+
+
+
+Boot device: /virtual-devices@100/channel-devices@200/disk@0:a  File and args: -Z rpool/ROOT/solaris-2
+
+Can't open rpool/ROOT/solaris-2
+
+
+#################################################################
+
+zfs set org.opensolaris.libbe:active=off rpool/export/zones/z1/rpool/solaris-8
+
+
+
+##############################################################
+
+DUMPADM ( Verificar caminho do dump ) 
+
+##Alterar caminho DUMP##
+dumpadm -d /dev/zvol/dsk/rpool/dump 
+################################################################
+
+Alterar o hostname
+
+To change the hostname in Solaris 11, I followed this steps:
+
+1 - To check the current environment properties:
+
+root@solaris:~# svccfg -s system/identity:node listprop config
+config                 application        
+config/enable_mapping boolean     true
+config/nodename       astring     solaris
+config/loopback       astring     solaris
+
+2 - Set the new hostname
+
+root@solaris:~# svccfg -s system/identity:node setprop config/nodename="my-host-name"
+root@solaris:~# svccfg -s system/identity:node setprop config/loopback="my-host-name"
+
+3- Refresh the properties:
+
+root@solaris:~# svccfg -s system/identity:node refresh
+
+4 - Restart the service:
+
+root@solaris:~# svcadm restart system/identity:node
+
+5 - verify that the changes took place:
+
+root@solaris:~# svccfg -s system/identity:node listprop config
+config                 application        
+config/enable_mapping boolean     true
+config/nodename       astring     my-host-name
+config/loopback       astring     my-host-name
+
+root@solaris:~# hostname
+my-host-name
+
+#################################################################
+
+Ops  ( Verifiar o Control Solaris Virtual) 
+
+virtinfo -a
+
+
+
+
+
+
+

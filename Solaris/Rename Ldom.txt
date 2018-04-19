@@ -1,0 +1,11 @@
+ldm list-constraints -x oldname >/tmp/oldname.xml
+ldm stop oldname
+ldm unbind oldname
+cp /tmp/oldname.xml /tmp/newname.xml
+vi /tmp/newname.xml
+            Content xsi:type="ovf:VirtualSystem_Type" ovf:id="oldname"
+ldm destroy oldname
+ldm add-domain -i tmp/newname.xml
+ldm bind newname
+ldm start newname
+ldm list

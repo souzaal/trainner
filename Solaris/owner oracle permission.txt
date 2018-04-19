@@ -1,0 +1,38 @@
+lsoracle:oinstall
+
+dd if=/dev/zero of=/dev/rdsk/c0t60000970000592600102533033364331d0s6 bs=1024 count=1000
+dd if=/dev/zero of=/dev/rdsk/c0t60000970000592600102533033364332d0s6 bs=1024 count=1000
+dd if=/dev/zero of=/dev/rdsk/c0t60000970000592600102533033364333d0s6 bs=1024 count=1000
+dd if=/dev/zero of=/dev/rdsk/c0t60000970000592600102533033364334d0s6 bs=1024 count=1000
+dd if=/dev/zero of=/dev/rdsk/c0t60000970000592600102533033364335d0s6 bs=1024 count=1000
+
+
+chown oracle:oinstall ../../devices/scsi_vhci/ssd@g60000970000592600102533033364331:g,raw
+chown oracle:oinstall ../../devices/scsi_vhci/ssd@g60000970000592600102533033364332:g,raw
+chown oracle:oinstall ../../devices/scsi_vhci/ssd@g60000970000592600102533033364333:g,raw
+chown oracle:oinstall ../../devices/scsi_vhci/ssd@g60000970000592600102533033364334:g,raw
+chown oracle:oinstall ../../devices/scsi_vhci/ssd@g60000970000592600102533033364335:g,raw
+
+chmod 660 ../../devices/scsi_vhci/ssd@g60000970000592600102533033364331:g,raw
+chmod 660 ../../devices/scsi_vhci/ssd@g60000970000592600102533033364332:g,raw
+chmod 660 ../../devices/scsi_vhci/ssd@g60000970000592600102533033364333:g,raw
+chmod 660 ../../devices/scsi_vhci/ssd@g60000970000592600102533033364334:g,raw
+chmod 660 ../../devices/scsi_vhci/ssd@g60000970000592600102533033364335:g,raw
+
+format -e c0t60000970000592600102533033364331d0
+format -e c0t60000970000592600102533033364332d0
+format -e c0t60000970000592600102533033364333d0cd
+format -e c0t60000970000592600102533033364334d0
+format -e c0t60000970000592600102533033364335d0
+
+
+
+Part      Tag    Flag     Cylinders        Size            Blocks
+  0 unassigned    wu       0               0         (0/0/0)          0
+  1 unassigned    wu       0               0         (0/0/0)          0
+  2 unassigned    wu       0               0         (0/0/0)          0
+  3 unassigned    wu       0               0         (0/0/0)          0
+  4 unassigned    wu       0               0         (0/0/0)          0
+  5 unassigned    wu       0               0         (0/0/0)          0
+  6        usr    wm       3 - 1088     1020.00MB    (1088/0/0) 2088960
+  7 unassigned    wu       0               0         (0/0/0)          0

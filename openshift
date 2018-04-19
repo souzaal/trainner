@@ -1,0 +1,249 @@
+TIPS PaaS ambiente CEF - DES
+
+LINKS
+https://registry-console-default.nprd.caixa/registry#/images/openshift
+https://cloudnprd.caixa:8443/console/project/cedessp/overview
+
+BAIXAR IMAGEM EXTERNA
+Descomentar linha abaixo no arquivo /etc/sysconfig/docker
+#http_proxy=proxydes.caixa:80
+BAIXAR
+#docker pull nomeimagem
+
+LOCALIZAR IMAGEM / LISTAR
+#docker search nomeimagem
+#docker images
+
+LISTAR IMAGENS STREAMS
+#oc get imagestreams -n openshift
+
+LISTAR TEMPLATES
+#oc get templates -n openshift
+
+EDITAR TEMPLATES
+#oc edit template jboss64-caixa -n openshift
+
+TEMPLATES: são imagens customizados no qual ficam disponível para o usuário utilizar na interface do Openshift
+IMAGESTREAMS: são imagens prontas
+
+RETAG - EXEMPLO
+#docker tag registry.access.redhat.com/openshift3/jenkins-1-rhel7 docker-registry.default.svc:5000/openshift/jenkins:1
+#docker tag registry.access.redhat.com/openshift3/jenkins-2-rhel7 docker-registry.default.svc:5000/openshift/jenkins:2
+
+ACESSO AO REGISTRY
+#oc login --certificate-authority=/etc/origin/master/ca.crt -u p716451 https://cloudnprd.caixa:8443
+#MYTOKEN=$(oc whoami -t)
+#echo $MYTOKEN
+Copiar token e utilizar no comando abaixo:
+#docker login -u adminuser -p IDcALoSWFpT2GKl0AF6OoIs2oZkyqr2ubpwIkW84h5w  docker-registry.default.svc:5000
+
+ADICIONAR NO REGISTRY - EXEMPLO
+#docker push docker-registry.default.svc:5000/openshift/jenkins:1
+#docker push docker-registry.default.svc:5000/openshift/jenkins:2
+
+IMAGENS PADRÕES PARA FUNCIONAR O AMBIENTE CONFORME CARACTERÍSTICA DA CEF
+#docker pull docker.io/openshift/origin-metrics-deployer:v3.6.1
+#docker pull docker.io/openshift/origin-metrics-cassandra:v3.6.1
+#docker pull docker.io/openshift/origin-metrics-hawkular-metrics:v3.6.1
+#docker pull docker.io/openshift/origin-metrics-heapster:v3.6.1
+#docker pull docker.io/openshift/origin-logging-fluentd:v3.6.1
+#docker pull docker.io/openshift/origin-logging-deployment:v3.6.1
+#docker pull docker.io/openshift/origin-logging-elasticsearch:v3.6.1
+#docker pull docker.io/openshift/origin-logging-kibana:v3.6.1
+#docker pull docker.io/openshift/origin-sti-builder:v3.6.1
+#docker pull docker.io/openshift/origin-docker-builder:v3.6.1
+#docker pull docker.io/openshift/origin-recycler:v3.6.1
+#docker pull docker.io/openshift/origin-deployer:v3.6.1
+#docker pull docker.io/openshift/origin-docker-registry:v3.6.1
+#docker pull docker.io/openshift/origin-haproxy-router:v3.6.1
+#docker pull docker.io/openshift/origin-pod:v3.6.1
+#docker pull docker.io/openshift/origin-logging-auth-proxy:v3.6.ls
+
+NODES
+PROCEDIMENTO UTILIZADO PARA RECUPERAR NODE DEVIDO FALHA HUMANA NA CONFIGURAÇÃO DO PUPPET
+#yum install docker -y
+#wget http://cx0000lx040.corecaixa/openshift/origin-node-3.6.1-1.0.008f2d5.x86_64.rpm
+#wget http://cx0000lx040.corecaixa/openshift/origin-sdn-ovs-3.6.1-1.0.008f2d5.x86_64.rpm
+#rpm -Uvh origin-node-3.6.1-1.0.008f2d5.x86_64.rpm origin-sdn-ovs-3.6.1-1.0.008f2d5.x86_64.rpm
+#rm -rf /var/lib/docker/*
+#echo "VG=VG_DOCKER" >> /etc/sysconfig/docker-storage-setup
+#docker-storage-setup
+#systemctl enable docker
+#systemctl start docker
+#systemctl enable origin-node.service
+#systemctl start origin-node.service
+#systemctl status origin-node.service
+#systemctl status docker
+######################
+
+LISTAR NODES
+#oc get nodes
+
+LISTAR PROJETOS
+#oc get projects
+
+EDITAR NAME SPACE - EXEMPLO
+#oc edit namespace cetec
+
+ADICIONAR ACESSO AO PROJETO
+#oadm policy add-role-to-user admin P745870 -n default
+#oadm policy add-role-to-user admin P745870 -n kube-system
+#oadm policy add-role-to-user admin P745870 -n logging
+#oadm policy add-role-to-user admin P745870 -n management-infra
+#oadm policy add-role-to-user admin P745870 -n openshift
+#oadm policy add-role-to-user admin P745870 -n openshift-infra
+#oadm policy add-role-to-user admin P745870 -n cedesbr
+#oadm policy add-role-to-user admin P745870 -n cedessp
+#oadm policy add-role-to-user admin P745870 -n pedes
+#oadm policy add-role-to-user admin P745870 -n cedesrj
+#oadm policy add-role-to-user admin P745870 -n ceptibrhmp
+#oadm policy add-role-to-user admin P745870 -n cetec
+#oadm policy add-role-to-user admin P745870 -n ceptibrhmp
+#oadm policy add-role-to-user admin P745870 -n ceptirjhmp
+#oadm policy add-role-to-user admin P745870 -n ceptisphmp
+#oadm policy add-role-to-user admin P745870 -n cetechmp
+#oadm policy add-role-to-user admin P745870 -n descentralizadodes
+#oadm policy add-role-to-user admin P745870 -n descentralizadohmp
+#oadm policy add-role-to-user admin P745870 -n pedes
+#oadm policy add-role-to-user admin P745870 -n pedeshmp
+
+ADICINAR ACESSO TOTAL
+#oadm policy add-cluster-role-to-user self-provisioner P716451
+
+ACESSAR COMO ADMIN
+#oc login -u system:admin
+
+ADICIONAR NOVO HOST
+Editar /etc/ansible/hosts e adicionar linha baixo de "[new_nodes]"
+Exemplo:
+[new_nodes]
+SBRDEAPRLX035.extra.caixa.gov.br openshift_node_labels="{'region': 'sete', 'zone': 'zonasete'}"
+
+Executar comando abaixo:
+#ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/openshift-node/scaleup.yml
+
+CRIAR VOLUME
+IP do NFS SERVER
+10.116.182.20
+
+LISTA PVC
+#oc get pvc
+
+LISTA PV
+#oc get pv
+
+Local arquivos yaml
+/usr/share/openshift
+EXEMPLO:
+[root@sbrdeaprlx068 openshift]# cat jenkins_pvc_descentralizado.yaml
+piVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: descentralizadojenkins
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+[root@sbrdeaprlx068 openshift]# cat pv_jenkins_descentralizado.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: descentralizadojenkins
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+  - ReadWriteOnce
+  nfs:
+    path: /exports/jenkins_descentralizado
+    server: 10.116.182.20
+  persistentVolumeReclaimPolicy: Recycle
+
+ADICIONAR VOLUME
+#oc create -f pv_jenkins_descentralizado.yaml -n openshift
+#oc create -f jenkins_pvc_descentralizado.yaml -n descentralizadodes
+
+AUTOMATIZADOR
+http://vhost.des.caixa
+http://vhost.tqs.caixa
+
+IP 10.116.82.183
+http://fontes.des.caixa/AUTOMATIZADOR_VHOST/DES
+http://cloudconfig.caixa/
+
+
+FLUXO CI/CD
+PROGRAMADOR
+- Desenvolve o código
+- commit no git de fontes.des.caixa
+
+- Analista Qualidade
+   - cria o script no jenkins
+   - script é automatico (a cada commit) ou uma vez por dia
+
+   Script vai no git de fontes
+   Script compila o código
+   Script passa pelo sonar (Ferramenta de qualidade)
+   codigo .ear vai para nexus caixa
+
+INFRA
+  cloudconfig.caixa
+    Criar o projeto e estrutura para JBOSS
+    standalone.xml
+    standalone.conf
+    .s2i/bin
+        assemble
+          contém as bibliotecas necessárias para o funcionamento da aplicação
+        run
+          que chama o start do jboss
+
+  Origin
+     cria o projeto aprontando para oprojeto no git de cloudconfig
+          usuario e senha principal do git
+          user:root
+          senha:ceptibr_21
+
+
+		  oc get pods -n pedes
+                          oc logs sishadowit-prd-4-1s96w -n pedes
+
+                          for i in $(oc get dc | grep -v NAME | grep -v Completed  | awk '{print $1}'); do echo "oc scale --replicas=0 dc $i" ; done
+                          for i in $(oc get pods -n pedes | grep -v NAME | grep -v Completed  | awk '{print $1}'); do echo "oc delete pod $i" ; done
+
+                          oc create quota pedeslimitpod --hard=pods=30
+                          oc get resourcequota --namespace=pedes
+                         oc delete quota pedeslimitpod
+                          oc describe quota
+
+
+						  Conectar no projeto
+#oc login -u system:admin
+#oc project pedes
+
+Gerar comandos para diminuir scale para 0 e permitir remover pods posteriormente (pegar resultado e executar, não coloquei direto por precaução)
+#for i in $(oc get dc | grep -v NAME | grep -v Completed  | awk '{print $1}'); do echo "oc scale --replicas=0 dc $i" ; done
+
+Gerar comandos para remover pods (pegar resultado e executar, não coloquei direto por precaução)
+#for i in $(oc get pods -n pedes | grep -v NAME | grep -v Completed  | awk '{print $1}'); do echo "oc delete pod $i" ; done
+
+Criar quota por projeto (namespace) – neste projeto o número de pod não ultrapassara 30
+#oc create quota pedeslimitpod --hard=pods=30
+
+Mostrar utilização em tempo real das quotas e o hard definido
+#oc describe quota
+
+Listar quotas
+#oc get resourcequota --namespace=pedes
+
+Remover quota
+#oc delete quota pedeslimitpod
+
+
+
+
+
+
+

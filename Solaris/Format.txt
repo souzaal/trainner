@@ -1,0 +1,80 @@
+0
+unassigned
+wu
+0
+0
+
+1
+unassigned
+wu
+0
+0
+
+2
+unassigned
+wu
+0
+0
+
+3
+unassigned
+wu
+0
+0
+
+4
+unassigned
+wu
+0
+0
+
+5
+unassigned
+wu
+0
+0
+
+6
+usr
+wm
+1
+65518c
+
+7
+unassigned
+wu
+0
+0
+p
+label
+
+
+
+Part      Tag    Flag     Cylinders         Size            Blocks
+  0 unassigned    wu       0                0         (0/0/0)             0
+  1 unassigned    wu       0                0         (0/0/0)             0
+  2 unassigned    wu       0                0         (0/0/0)             0
+  3 unassigned    wu       0                0         (0/0/0)             0
+  4 unassigned    wu       0                0         (0/0/0)             0
+  5 unassigned    wu       0                0         (0/0/0)             0
+  6        usr    wm       1 - 65244       59.73GB    (65244/0/0) 125268480
+  7 unassigned    wu       0                0         (0/0/0)             0
+  
+  Permissão
+  
+  
+
+ ls -ltr /dev/rdsk/c1d15s6 /dev/rdsk/c1d16s6 /dev/rdsk/c1d17s6 /dev/rdsk/c1d18s6
+ 
+ 
+chown grid:oinstall /devices/virtual-devices@100/channel-devices@200/disk@f:g,raw
+chown grid:oinstall /devices/virtual-devices@100/channel-devices@200/disk@10:g,raw
+chown grid:oinstall /devices/virtual-devices@100/channel-devices@200/disk@11:g,raw
+chown grid:oinstall /devices/virtual-devices@100/channel-devices@200/disk@12:g,raw
+
+chmod 660 /devices/virtual-devices@100/channel-devices@200/disk@f:g,raw
+chmod 660 /devices/virtual-devices@100/channel-devices@200/disk@10:g,raw
+chmod 660 /devices/virtual-devices@100/channel-devices@200/disk@11:g,raw
+chmod 660 /devices/virtual-devices@100/channel-devices@200/disk@12:g,raw
+
+ls -ltr /dev/rdsk/c1d15s6 /dev/rdsk/c1d16s6 /dev/rdsk/c1d17s6 /dev/rdsk/c1d18s6 | awk '{print $11}' | cut -c6-300 | xargs ls -ltr

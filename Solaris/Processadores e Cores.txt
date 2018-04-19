@@ -1,0 +1,15 @@
+
+ldm add-vdsdev mpgroup=cx0000ux359_vol59 /dev/dsk/c0t60000970000592600041533031354236d0s2 cx0000ux359_vol59@primary-vds0
+ldm add-vdsdev mpgroup=cx0000ux359_vol59 /dev/dsk/c0t60000970000592600041533031354236d0s2 cx0000ux359_vol59@iodomain-vds0
+
+ldm add-vdisk cx0000ux359_vol60 cx0000ux359_vol59@primary-vds0 cx0000ux359
+
+ldm add-vdisk cxextrux233_vol13 cxextrux233_vol13@primary-vds0 cxextrux233
+
+
+
+ldm rm-vdsdev cx0000ux359_vol59@primary-vds0
+
+c0d59
+
+zg362siatd

@@ -1,0 +1,81 @@
+
+
+ - serviço solaris 10
+
+
+svcadm disable svc:/controlm-agent:default
+
+mv /opt/ctmage /opt/ctmage_old
+
+zfs create -o mountpoint=legacy rpool/opt
+zfs create -o quota=5g -o mountpoint=/opt/ctmage zg464/opt/ctmage
+
+chown ctmage:controlm /opt/ctmage
+
+mv /opt/ctmage_old/* /opt/ctmage
+
+mv /opt/ctmage_old/.cshrc /opt/ctmage
+
+mv /opt/ctmage_old/.hushlogin /opt/ctmage
+
+rm -r /opt/ctmage_old
+
+svcadm enable svc:/controlm-agent:default
+
+/opt/ctmage/ctm/scripts/start-ag -u ctmage -p ALL - Solaris 10
+
+
+
+________________________________________________________________
+
+zfs set mountpoint=/opt/ctmage zg464/opt/ctmage
+
+zfs set quota=10G 
+
+
+
+
+
+
+zfs create -o mountpoint=suporte_br20 zg1018/suporte_br20
+
+
+rpcinfo -p stgnfsdados.dtc.caixa
+
+
+
+
+
+3577-9359
+
+ramal 9377 - Kened
+rama 9380 - isilon
+
+
+_
+
+
+Esta rede nao esta liberada 10.222.18.19
+
+SD de solicitação da rede 332540
+
+
+
+
+rpool/VARSHARE/pkg      98G    32K        57G     1%    /var/share/pkg
+rpool/VARSHARE/pkg/repositories
+                        98G    31K        57G     1%    /var/share/pkg/repositories
+stgnfsdados.dtc.caixa:/ifs/DCPARMAZNA1/ZONEINTRA/CEPTIBR/PRODUCAO
+                       300G   114G       186G    39%    /producao_isilon
+10.192.32.117:/websites
+                       143G    54M       143G     1%    /websites
+stgnfsdados.dtc.caixa:/ifs/DCPARMAZNA1/ZONEINTRA/CEPTIBR/SUPORTE_BR20
+                       4.0T   873M       4.0T     1%    /suporte_br20
+
+root@cx0000ux1018:/# mount -a
+mount: /tmp is already mounted or swap is busy
+nfs mount: mount: /websites: Device busy
+nfs mount: stgnfsdados.dtc.caixa:/ifs/DCPARMAZNA1/ZONEINTRA/CEPTIBR/MIDIAS_SAP: Permission denied
+nfs mount: mount: /producao_isilon: Device busy
+nfs mount: mount: /suporte_br20: Device busy
+

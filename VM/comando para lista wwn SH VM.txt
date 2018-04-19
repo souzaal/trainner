@@ -1,0 +1,16 @@
+Comando para lista WWN servidores fisicos
+
+ esxcfg-mpath -L
+
+ esxcfg-mpath -l | grep -i Device
+
+ esxcfg-mpath -l | grep -i "Runtime Name"
+ 
+ esxcfg-mpath -l | grep -i hba
+
+ 
+  esxcli storage core adapter list | grep -i naa. | awk '{print $4}'
+  
+  esxcli storage core adapter list | grep -i HBA | awk '{print $4}'
+  
+  esxcli storage core adapter list

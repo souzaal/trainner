@@ -1,0 +1,14 @@
+share -F nfs /rpool/planejamento
+
+zfs set sharenfs=on rpool/planejamento
+
+zfs share rpool/planejamento
+
+mount -F nfs -o ro dngerpux0010:/planejamento /planejamento
+
+/etc/vfstab
+
+dngerpux0010:/planejamento      - /planejamento nfs - yes proto=tcp,noquota
+
+
+

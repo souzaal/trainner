@@ -1,0 +1,3 @@
+-mp cx0000nt2108.intra.caixa.gov.br -sitecode SCM ccm-Sol11sparc.tar
+
+/rpool/package/SCCM_Solaris/omi

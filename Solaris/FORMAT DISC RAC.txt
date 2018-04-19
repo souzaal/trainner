@@ -1,0 +1,69 @@
+Verificar permissão oracle
+
+
+ls -lL /dev/rdsk
+
+
+chown grid:oracle /dev/rdsk/c0t60000970000592600123533031304342d0s6
+chmod 660 /dev/rdsk/c0t60000970000592600123533031304342d0s6
+chown grid:oracle /dev/rdsk/grids6
+chmod 660 /dev/rdsk/grids6
+chown grid:oracle /dev/rdsk/asmadmins6
+chmod 660 /dev/rdsk/asmadmins6
+
+
+p
+p
+0
+unassigned
+wu
+0
+0
+1
+unassigned
+wu
+0
+0
+2
+unassigned
+wu
+0
+0
+3
+unassigned
+wu
+0
+0
+4
+unassigned
+wu
+0
+0
+5
+unassigned
+wu
+0
+0
+7
+unassigned
+wu
+0
+0
+6
+usr
+wm
+1
+2247c
+l
+0
+y
+p
+q
+q
+
+for i in `cat lst`; do inq.sol64 -nodots |grep -i $i; done
+
+for i in `cat lst`; do format -e $i; done
+for i in `cat lst`; do dd if=/dev/zero of=/dev/rdsk/$i"s6" bs=1024 count=1000; done
+for i in `cat lst`; do echo chown oracle:oinstall /dev/rdsk/$i"s6"; done
+for i in `cat lst`; do echo chmod 660 /dev/rdsk/$i"s6"; done

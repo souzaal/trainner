@@ -1,0 +1,4 @@
+Get-View -Viewtype CBRSVITRLX008 -Property Name, Config.Hardware.Device | Select name,@{n="MAC(s)"; e={($_.Config.Hardware.Device | ?{($_ -is [VMware.Vim.VirtualEthernetCard])} | %{$_.MacAddress}) -join ","}}
+
+
+get-vm | Get-NetworkAdapter | where {$_.macaddress -eq "00:50:56:8e:dc:f6"} | select parent,macaddress

@@ -1,0 +1,1 @@
+/opt/IBM/java-i386-80/jre/bin/java -jar /opt/geramassateste/java/geradorDeCarga.jar /opt/geramassateste/origem/ /opt/geramassateste/destino/ 800

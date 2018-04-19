@@ -1,0 +1,94 @@
+
+
+Altera o location do publisher
+
+
+svccfg -s pkg/mirror:default
+
+
+pkg set-publisher -G /export/IPS/repo -g http://10.192.127.23 solaris
+
+svc:/application/pkg/mirror:default> setprop config/repository = astring: "/export/IPS/repo"
+svc:/application/pkg/mirror:default> refresh
+svc:/application/pkg/mirror:default> listprop config
+config                      application
+config/cache_dir           astring     /var/cache/pkg/mirror
+config/debug               boolean     false
+config/publishers          astring     solaris
+config/ref_image           astring     /
+config/stability           astring     Evolving
+config/value_authorization astring     solaris.smf.manage.pkg-mirror
+config/crontab_period      astring     "0,5,10,15,20,25,30,35,40,45,50,55 * * * *"
+config/repository          astring     /export/IPS/repo
+svc:/application/pkg/mirror:default>
+svc:/application/pkg/mirror:default>
+svc:/application/pkg/mirror:default> exit
+
+##############################################################
+deleta publisher
+
+pkg unset-publisher solaris
+
+#############################################################
+
+
+Criar Servidor Server
+
+svcadm enable application/pkg/server
+svccfg -s application/pkg/server setprop pkg/port=10000
+svccfg -s application/pkg/server setprop pkg/inst_root=/export/IPS/repo
+svccfg -s application/pkg/server setprop pkg/readonly=false
+svcadm refresh application/pkg/server
+svcadm restart application/pkg/server
+
+pkg set-publisher -G '*' -g http://10.192.32.243:10000 solaris
+
+pkg update ou pkg update --accept
+
+
+
+3. pkgrepo rebuild -s /export/repoSolaris11_1/repo
+
+4. svcadm restart svc:/application/pkg/server:default
+
+
+*Verificar relese*
+
+5 pkg info entire
+
+
+
+##############################################################
+
+verifar porta
+
+svccfg -s application/pkg/server listprop | grep port
+
+##############################################################
+
+ERRO NO REPOSITORIO
+
+
+
+tion: Starting ...
+
+        Creating IPS image
+        Error occurred during execution of 'generated-transfer-14204-1' checkpoint.
+        Failed Checkpoints:
+
+        Checkpoint execution error:
+
+                Error refreshing publishers, 0/1 catalogs successfully updated:
+
+                http protocol error: code: 404 reason: Not Found
+                URL: 'http://10.192.127.23/catalog/1/catalog.attrs' (happened 4 times)
+				
+####################################################################
+
+instalação de pacote verificar as ultimas release
+
+pkg list -af entire
+
+
+
+

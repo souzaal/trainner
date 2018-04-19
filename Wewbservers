@@ -1,0 +1,8 @@
+---
+ - hosts: Servers
+   tasks:
+     - yum: name=nginx.x86_64 state=present update_cache=yes
+
+     - name: Start Service
+       service: name=nginx enabled=yes state=started
+~

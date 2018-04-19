@@ -1,0 +1,5 @@
+Mata procesos VM
+
+ ps | grep vmx 
+ 
+ esxcli vm process list | grep CX0000NT2048

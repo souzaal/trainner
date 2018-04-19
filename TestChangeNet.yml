@@ -1,0 +1,55 @@
+---
+- hosts: 127.0.0.1
+  gather_facts: no
+  connection: local
+  user: root
+  sudo: false
+  serial: 1
+
+  tasks:
+    - name: NETWORK
+      local_action:
+        module: vmware_vm_shell
+        hostname: vcenterdht.caixa
+        validate_certs: no
+        username: corpcaixa\p745870
+        password: 53RKcpUf
+        datacenter: CEF
+        cluster: DL980
+        vm_id: MyVM
+        vm_username: root
+        vm_password: 123456
+        vm_shell: /usr/bin/nmcli
+        vm_shell_args: " con add type ethernet con-name eth0 ifname eth0 ip4 10.116.182.22/23 gw4 10.116.182.1"
+        vm_shell_cwd: "/tmp"
+
+#    - name: REBOOT - to ensure network settings take effect
+#    local_action:
+#      module: vmware_vm_shell
+#      hostname: "{{ vcenter_host }}"
+#      username: "{{ vcenter_username }}"
+#      password: "{{ vcenter_password }}"
+#      datacenter: "{{ datacenter }}"
+#      vm_id: "{{ name }}"
+#      vm_username: root
+#      vm_password: "{{ rooter }}"
+#      vm_shell: /sbin/shutdown
+#      vm_shell_args: " -r now"
+
+#    - name: REBOOT - wait for server to come back
+#    local_action:
+#      module: wait_for
+#      host: 192.116.182.23
+#      port: 22
+#      state: started
+#      delay: 30
+#      timeout: 300
+
+
+#    - name: shell execution
+#      local_action:
+#        module: vmware_vm_shell
+#        hostname: myVSphere
+#        username: myUsername
+#        password: mySecret
+#        datacenter: myDatacenter

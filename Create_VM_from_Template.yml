@@ -1,0 +1,21 @@
+---
+- hosts: all
+  gather_facts: No
+  connection: local
+
+  tasks:
+  - name: create the vm
+    vmware_guest:
+      vcenter_hostname: vcenterdht.caixa
+      esxi_host: sdedl980sh0006.corecaixa
+      username: corpcaixa\p745870
+      password: 52RKcpUf
+      validate_certs: no
+      name: MyVM
+      state: poweredon
+      folder: "CEF / CEPTIBR / Linux"
+      datacenter: CEF
+      cluster: DL980
+      template: RHEL7
+      annotation: Test
+    register: deploy

@@ -1,0 +1,5 @@
+bash-4.1$ su - supadmin
+Oracle Corporation      SunOS 5.11      11.2    November 2014
+supadmin@cxextrux874:~$ su -
+Oracle Corporation      SunOS 5.11      11.2    November 2014
+You have new mail.

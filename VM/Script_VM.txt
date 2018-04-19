@@ -1,0 +1,54 @@
+Alterar o tipo de rede
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184 | Get-NetworkAdapter
+ | Set-NetworkAdapter -Type Vmxnet3
+
+Desligar VM's:
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184 | Shutdown-VMGuest
+
+Start-VM -VM VM -Confirm -RunAsync
+
+Stop-VM -VM VM -Confirm
+
+
+Habilitar o hotadd:
+
+$VM = Get-VM CXEXTRLX184
+$spec = New-Object VMware.Vim.VirtualMachineConfigSpec
+$spec.memoryHotAddEnabled = $true
+$spec.cpuHotAddEnabled = $true
+$VM.ExtensionData.ReconfigVM_Task($spec)
+
+Setar memoria:
+
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184 | Set-VM -MemoryGB 8
+
+Realizar snapshot
+
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184,CXEXTRLX185 | new-snapshot -name NOMEDOSNAP
+
+
+Iniciar VM
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184| start-VM
+
+
+Verificar IP:
+Get-VM | Select Name, @{N="IP Address";E={@($_.guest.IPAddress[0])}}
+
+
+Verificar versão Vmware Tools:
+
+get-vm VMNAME| select name, ToolsVersion | sort ToolsVersion
+
+Verificar CPU/Memoria HotAdd:
+
+Get-VM | Get-View | Select Name, ` @{N="CpuHotAddEnabled";E={$_.Config.CpuHotAddEnabled}}, ` @{N="CpuHotRemoveEnabled";E={$_.Config.CpuHotRemoveEnabled}}, ` @{N="MemoryHotAddEnabled";E={$_.Config.MemoryHotAddEnabled}}
+
+Realiza Snapshot:
+
+New-Snapshot -VM CXEXTRNT065 -Name ATVAtualizacao
+
+Instalar Vmware Tools:
+Update-Tools VMNAME
+
+
+Get-VM | Get-NetworkAdapter | Select Name, ` @{N="D";E={$_.Config.CpuHotAddEnabled}},

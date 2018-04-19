@@ -1,0 +1,64 @@
+format c0t60000970000592600102533033313833d0
+p
+p
+q
+q
+
+Tamanhos
+1088c - 1
+32763c - 30
+54609c - 50
+65530c - 100
+2180c - 2 
+32763c - 120
+10918c - 10
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+format -e c1d31
+
+p
+0
+unassigned
+wu
+0
+0c
+1
+unassigned
+wu
+0
+0c
+2
+unassigned
+wu
+0
+0c
+3
+unassigned
+wu
+0
+0c
+4
+unassigned
+wu
+0
+0c
+5
+unassigned
+wu
+0
+0c
+6
+usr
+wm
+1
+65532c
+7
+usr
+wu
+0
+0c
+label
+0
+y
+q
+q

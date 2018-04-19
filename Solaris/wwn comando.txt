@@ -1,0 +1,94 @@
+acesso ldom
+
+verificar disco
+
+echo | format
+
+hbinfo -v
+
+
+Lista disco
+
+ls -l /dev/dsk/*| grep 60000970000595700023533031344137
+
+ /suporte_tmp/inq.sol64 | grep 60000970000595700023533031344137 ( comando inq.sol64)
+
+
+Verificar wwn online e offline
+
+fcinfo hba-port |egrep "Port WWN|State|/dev/cfg"
+
+
+
+ldm add vdsdev mpgroup=dngerpux0033-bin04 /dev/dsk/c0t60000970000595700023533031354239d0 dngerpux0033_vol4@primary-vds0
+ldm add vdsdev mpgroup=dngerpux0033-bin04 /dev/dsk/c0t60000970000595700023533031354239d0 dngerpux0033_vol4@iodomain-vds0
+
+
+
+ldm add-vdisk vdisk4 dngerpux0034_vol4	dngerpux0033_vol4_@primary-vds0 dngerpux0033
+
+ldm add-vdisk dngerpux0034_vol4	dngerpux0033_vol4_@iodomain-vds0 dngerpux0033
+
+vdisk3           dngerpux0033-vol3@iodomain-vds0      3    disk@3  iodomain       dngerpux0033-bin03
+
+ldm add-vdisk swapdisk APPLPcx2062_swapdisk@primary-vds0 APPLPcx2062
+
+............................................................../dev/rdsk/c0t60000970000592600102533031333231d0s2
+
+
+------------------------------------------------------------------------------------------------------------------------------
+/dev/dsk/c0t60000970000592600102533031333230d0s2
+
+c0t60000970000592600102533031333230d0s2
+
+
+
+ldm add-vdsdev mpgroup=cx0000ux2313-vol31 /dev/dsk/c0t60000970000592600102533031333230d0s2 cx0000ux2313-vol31@primary-vds0
+
+ldm add-vdsdev mpgroup=cx0000ux2313-vol31 /dev/dsk/c0t60000970000592600102533031333230d0s2 cx0000ux2313-vol31@iodomain-vds0
+
+ldm add-vdisk cx0000ux2313-vol31 cx0000ux2313-vol31@primary-vds0 cx0000ux2313
+
+
+###############################################################################################################################
+
+
+ -------------------------------------------------------------------------------------------------------------------------------
+ 
+ /dev/rdsk/c0t60000970000592600102533031333231d0s2
+
+ldm add-vdsdev mpgroup=cx0000ux2313-vol32 /dev/dsk/c0t60000970000592600102533031333231d0s2 cx0000ux2313-vol32@primary-vds0
+
+ldm add-vdsdev mpgroup=cx0000ux2313-vol32 /dev/dsk/c0t60000970000592600102533031333231d0s2 cx0000ux2313-vol32@iodomain-vds0
+ 
+ldm add-vdisk cx0000ux2313-vol32 cx0000ux2313-vol32@primary-vds0 cx0000ux2313
+ 
+
+ 
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+/dev/rdsk/c0t60000970000592600102533031333232d0s2
+
+ldm add-vdsdev mpgroup=cx0000ux2313-vol33 /dev/dsk/c0t60000970000592600102533031333232d0s2 cx0000ux2313-vol33@primary-vds0
+
+ldm add-vdsdev mpgroup=cx0000ux2313-vol33 /dev/dsk/c0t60000970000592600102533031333232d0s2 cx0000ux2313-vol33@iodomain-vds
+
+ldm add-vdisk cx0000ux2313-vol33 cx0000ux2313-vol33@primary-vds0 cx0000ux2313
+
+
+64: No such file or directory
+cx0000ux2090:/# inq.sol64 | grep 1322
+/dev/rdsk/c0t60000970000592600102533031333232d0s2 :EMC     :SYMMETRIX       :5874  :0201322008 :   104857920
+cx0000ux2090:/# inq.sol64 | grep 1320
+/dev/rdsk/c0t60000970000592600102533031333230d0s2 :EMC     :SYMMETRIX       :5874  :0201320008 :   104857920
+cx0000ux2090:/# inq.sol64 | grep 1321
+/dev/rdsk/
+
+ :EMC     :SYMMETRIX       :5874  :0201321008 :   104857920
+
+
+
+
+

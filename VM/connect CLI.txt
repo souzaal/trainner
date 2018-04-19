@@ -1,0 +1,9 @@
+Connect-VIServer -Server cx0000nt230.intra.caixa.gov.br -User a745870 -Password worksBasic2012
+
+
+Connect-VIServer -Server sdegerennt0001 -User corpcaixa\745870 -Password 48RKcpUf
+
+
+Get-NetworkAdapter
+
+Stop-VM -VM cx000lx141 -Confirm

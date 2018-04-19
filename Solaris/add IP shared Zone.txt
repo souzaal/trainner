@@ -1,0 +1,7 @@
+  605  ipadm create-ip ipmp0:1
+  606  ipadm create-addr -T static -a 10.193.0.2/24 ipmp0
+  607  ifconfig -a
+  611  ipadm show-addrprop
+  612  ipadm set-addrprop -t -p zone=grandzone ipmp0/v4a
+  613  ifconfig -a
+  614  zlogin grandzone

@@ -1,0 +1,14 @@
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX321_CLONE | new-snapshot -name CXEXTRLX321_bkp
+
+Start-VM -VM VM -Confirm -RunAsync
+
+Stop-VM -VM VM -Confirm
+
+
+Get-Datacenter CEPTIBR21 | Get-Cluster 7259CLUDES002 | Get-VM CXEXTRLX184 | Shutdown-VMGuest
+
+
+Update-Tools VMNAME
+
+
+Set-VM -VM nome -Verson v10
